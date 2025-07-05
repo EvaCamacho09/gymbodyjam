@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Dashboard</title>
+</head>
+<body>
+    <h1>Setting up test authentication...</h1>
+    <script>
+        // Set the test token
+        localStorage.setItem('token', '8|FVcyxbz1g3mi2jIVf18XGcAR7OCddKyZWT7RELeGc67ef4c6');
+        localStorage.setItem('user', JSON.stringify({
+            id: 1,
+            name: 'Administrador',
+            email: 'admin@gym.com',
+            role: 'admin'
+        }));
+        
+        // Redirect to main app
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 1000);
+    </script>
+    <p>Redirecting to dashboard...</p>
+</body>
+</html>

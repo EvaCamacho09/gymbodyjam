@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>API Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        async function testAPI() {
+            const token = '8|FVcyxbz1g3mi2jIVf18XGcAR7OCddKyZWT7RELeGc67ef4c6';
+            const results = document.getElementById('results');
+            
+            try {
+                // Test basic connectivity
+                console.log('Testing basic API...');
+                const testResponse = await fetch('/api/test');
+                const testData = await testResponse.json();
+                console.log('Test response:', testData);
+                
+                // Test authenticated endpoint
+                console.log('Testing dashboard stats...');
+                const statsResponse = await fetch('/api/dashboard/estadisticas', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (statsResponse.ok) {
+                    const statsData = await statsResponse.json();
+                    console.log('Stats response:', statsData);
+                    results.innerHTML = `
+                        <h2>API Test Results</h2>
+                        <h3>Basic Test:</h3>
+                        <pre>${JSON.stringify(testData, null, 2)}</pre>
+                        <h3>Dashboard Stats:</h3>
+                        <pre>${JSON.stringify(statsData, null, 2)}</pre>
+                    `;
+                } else {
+                    const errorText = await statsResponse.text();
+                    console.error('Stats error:', errorText);
+                    results.innerHTML = `<h2>Error:</h2><pre>${errorText}</pre>`;
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                results.innerHTML = `<h2>Error:</h2><pre>${error.message}</pre>`;
+            }
+        }
+        
+        testAPI();
+    </script>
+</body>
+</html>

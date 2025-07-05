@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Setup Auth and Go to Dashboard</title>
+</head>
+<body>
+    <h1>Setting up authentication...</h1>
+    <p id="status">Setting token...</p>
+    
+    <script>
+        // Clear any existing auth
+        localStorage.clear();
+        
+        // Set new token and user
+        const token = '8|FVcyxbz1g3mi2jIVf18XGcAR7OCddKyZWT7RELeGc67ef4c6';
+        const user = {
+            id: 1,
+            name: 'Administrador',
+            email: 'admin@gym.com',
+            role: 'admin'
+        };
+        
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        document.getElementById('status').textContent = 'Token set! Redirecting to dashboard...';
+        
+        console.log('Token set:', localStorage.getItem('token'));
+        console.log('User set:', localStorage.getItem('user'));
+        
+        // Redirect to dashboard
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 2000);
+    </script>
+</body>
+</html>

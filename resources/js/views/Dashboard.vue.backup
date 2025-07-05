@@ -1,0 +1,420 @@
+<template>
+  <div class="dashboard">
+    <!-- Estadísticas principales -->
+    <div class="stats-grid">
+      <Card class="stat-card total-clientes clickable" @click="navegarClientes('activos')">
+        <t    const navegarClientes = (filtro) => {
+      router.push({
+        name: 'Clientes',
+        query: { estado: filtro }
+      });
+    };e #content>
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="pi pi-users"></i>
+            </div>
+            <div class="stat-info">
+              <h3>{{ estadisticas.total_clientes || 0 }}</h3>
+              <p>Clientes Activos</p>
+            </div>
+          </div>
+        </t>
+      </Card>
+
+      <Card class="stat-card clientes-morosos clickable" @click="navegarClientes('morosos')">
+        <template #content>
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="pi pi-exclamation-triangle"></i>
+            </div>
+            <div class="stat-info">
+              <h3>{{ estadisticas.clientes_morosos || 0 }}</h3>
+              <p>Clientes Morosos</p>
+            </div>
+          </div>
+        </template>
+      </Card>
+
+      <Card class="stat-card proximos-vencer clickable" @click="navegarClientes('proximos')">
+        <template #content>
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="pi pi-clock"></i>
+            </div>
+            <div class="stat-info">
+              <h3>{{ estadisticas.clientes_proximos_vencer || 0 }}</h3>
+              <p>Próximos a Vencer</p>
+            </div>
+          </div>
+        </template>
+      </Card>
+
+      <Card class="stat-card ingresos-mes">
+        <template #content>
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="pi pi-dollar"></i>
+            </div>
+            <div class="stat-info">
+              <h3>${{ formatCurrency(estadisticas.ingresos_mes) }}</h3>
+              <p>Ingresos del Mes</p>
+            </div>
+          </div>
+        </template>
+      </Card>
+    </div>
+
+    <!-- Acciones rápidas -->
+    <Card class="quick-actions">
+      <template #title>
+        <h3>Acciones Rápidas</h3>
+      </template>
+      <template #content>
+        <div class="actions-grid">
+          <Button
+            icon="pi pi-plus"
+            label="Nuevo Cliente"
+            class="p-button-outlined"
+            @click="$router.push('/clientes')"
+          />
+          <Button
+            icon="pi pi-credit-card"
+            label="Nueva Membresía"
+            class="p-button-outlined"
+            @click="$router.push('/membresias')"
+          />
+          <Button
+            icon="pi pi-users"
+            label="Ver Clientes"
+            class="p-button-outlined"
+            @click="$router.push('/clientes')"
+          />
+          <Button
+            icon="pi pi-chart-line"
+            label="Reportes"
+            class="p-button-outlined"
+            disabled
+          />
+        </div>
+      </template>
+    </Card>
+
+    <div class="dashboard-bottom">
+      <!-- Membresías populares -->
+      <Card class="membresias-populares">
+        <template #title>
+          <h3>Membresías Más Populares</h3>
+        </template>
+        <template #content>
+          <div v-if="estadisticas.membresias_mas_populares?.length" class="membresias-list">
+            <div
+              v-for="membresia in estadisticas.membresias_mas_populares"
+              :key="membresia.id"
+              class="membresia-item"
+            >
+              <div class="membresia-info">
+                <h4>{{ membresia.nombre }}</h4>
+                <p>${{ membresia.precio }} - {{ membresia.duracion_dias }} días</p>
+              </div>
+              <div class="membresia-count">
+                <span class="count">{{ membresia.clientes_count }}</span>
+                <small>clientes</small>
+              </div>
+            </div>
+          </div>
+          <div v-else class="no-data">
+            <p>No hay datos de membresías</p>
+          </div>
+        </template>
+      </Card>
+
+      <!-- Actividad reciente -->
+      <Card class="actividad-reciente">
+        <template #title>
+          <h3>Actividad Reciente</h3>
+        </template>
+        <template #content>
+          <div v-if="actividad.ultimos_clientes?.length" class="actividad-list">
+            <h4>Últimos Clientes Registrados</h4>
+            <div
+              v-for="cliente in actividad.ultimos_clientes"
+              :key="cliente.id"
+              class="actividad-item"
+            >
+              <i class="pi pi-user"></i>
+              <div class="actividad-info">
+                <p><strong>{{ cliente.nombre }}</strong></p>
+                <small>{{ formatDate(cliente.created_at) }}</small>
+              </div>
+            </div>
+          </div>
+          <div v-else class="no-data">
+            <p>No hay actividad reciente</p>
+          </div>
+        </template>
+      </Card>
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref, onMounted } from 'vue';
+import { useToast } from 'primevue/usetoast';
+import { useRouter } from 'vue-router';
+import api from '../services/api';
+
+export default {
+  name: 'Dashboard',
+  setup() {
+    const toast = useToast();
+    const router = useRouter();
+    const estadisticas = ref({});
+    const actividad = ref({});
+    const loading = ref(false);
+
+    const loadEstadisticas = async () => {
+      try {
+        loading.value = true;
+        const response = await api.getEstadisticas();
+        estadisticas.value = response;
+      } catch (error) {
+        console.error('Error loading statistics:', error);
+        toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Error al cargar estadísticas',
+          life: 3000
+        });
+      } finally {
+        loading.value = false;
+      }
+    };
+
+    const loadActividad = async () => {
+      try {
+        const response = await api.getActividadReciente();
+        actividad.value = response;
+      } catch (error) {
+        console.error('Error loading recent activity:', error);
+      }
+    };
+
+    const formatCurrency = (amount) => {
+      return new Intl.NumberFormat('es-ES', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(amount || 0);
+    };
+
+    const formatDate = (dateString) => {
+      return new Date(dateString).toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    };
+
+    const navegarClientes = (filtro) => {
+      router.push({
+        name: 'clientes',
+        query: { filtro }
+      });
+    };
+
+    onMounted(() => {
+      loadEstadisticas();
+      loadActividad();
+    });
+
+    return {
+      estadisticas,
+      actividad,
+      loading,
+      formatCurrency,
+      formatDate,
+      navegarClientes
+    };
+  }
+}
+</script>
+
+<style scoped>
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stat-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+}
+
+.total-clientes .stat-icon {
+  background: #3b82f6;
+}
+
+.clientes-morosos .stat-icon {
+  background: #ef4444;
+}
+
+.proximos-vencer .stat-icon {
+  background: #f59e0b;
+}
+
+.ingresos-mes .stat-icon {
+  background: #10b981;
+}
+
+.stat-info h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem 0;
+  color: #1f2937;
+}
+
+.stat-info p {
+  color: #6b7280;
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.stat-card.clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.stat-card.clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card.clickable:active {
+  transform: translateY(0);
+}
+
+.quick-actions {
+  margin-bottom: 2rem;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.dashboard-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.membresias-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.membresia-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 6px;
+}
+
+.membresia-info h4 {
+  margin: 0 0 0.25rem 0;
+  color: #1f2937;
+}
+
+.membresia-info p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.membresia-count {
+  text-align: center;
+}
+
+.count {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.actividad-list h4 {
+  margin: 0 0 1rem 0;
+  color: #1f2937;
+}
+
+.actividad-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.actividad-item:last-child {
+  border-bottom: none;
+}
+
+.actividad-item i {
+  color: #6b7280;
+}
+
+.actividad-info p {
+  margin: 0 0 0.25rem 0;
+}
+
+.actividad-info small {
+  color: #6b7280;
+}
+
+.no-data {
+  text-align: center;
+  color: #6b7280;
+  padding: 2rem;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-bottom {
+    grid-template-columns: 1fr;
+  }
+  
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
