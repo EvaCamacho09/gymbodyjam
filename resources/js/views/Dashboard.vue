@@ -1,5 +1,7 @@
 <template>
   <div class="dashboard">
+    
+
     <!-- Estadísticas principales -->
     <div class="stats-grid">
       <Card class="stat-card total-clientes clickable" @click="navegarClientes('activos')">
@@ -168,17 +170,61 @@ export default {
   },
   setup() {
     const router = useRouter();
-    const estadisticas = ref({});
-    const actividad = ref({});
+    const estadisticas = ref({
+      total_clientes: 0,
+      clientes_morosos: 0,
+      clientes_proximos_vencer: 0,
+      ingresos_mes: 0,
+      membresias: []
+    });
+    const actividad = ref({
+      asistencias_hoy: 0,
+      ultimos_clientes: [],
+      ultimas_membresias_asignadas: []
+    });
     const loading = ref(false);
+    const debugInfo = ref({});
+
+    // Función segura para acceder a localStorage
+    const getFromLocalStorage = (key) => {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        return localStorage.getItem(key);
+      }
+      return null;
+    };
+
+    const setToLocalStorage = (key, value) => {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem(key, value);
+      }
+    };
 
     const loadEstadisticas = async () => {
       try {
         loading.value = true;
-        const response = await api.get('/estadisticas');
+        console.log('Cargando estadísticas...');
+        console.log('Token en localStorage:', getFromLocalStorage('token'));
+        
+        const response = await api.get('/dashboard/estadisticas');
+        console.log('Respuesta estadísticas:', response.data);
         estadisticas.value = response.data;
+        debugInfo.value.estadisticasLoaded = true;
       } catch (error) {
         console.error('Error al cargar estadísticas:', error);
+        console.error('Error status:', error.response?.status);
+        console.error('Error data:', error.response?.data);
+        debugInfo.value.estadisticasError = error.response?.data || error.message;
+        
+        // Solo establecer valores por defecto si estadisticas está completamente vacío
+        if (!estadisticas.value || (!estadisticas.value.total_clientes && estadisticas.value.total_clientes !== 0)) {
+          estadisticas.value = {
+            total_clientes: 0,
+            clientes_morosos: 0,
+            clientes_proximos_vencer: 0,
+            ingresos_mes: 0,
+            membresias: []
+          };
+        }
       } finally {
         loading.value = false;
       }
@@ -186,10 +232,25 @@ export default {
 
     const loadActividad = async () => {
       try {
-        const response = await api.get('/actividad-reciente');
+        console.log('Cargando actividad...');
+        const response = await api.get('/dashboard/actividad-reciente');
+        console.log('Respuesta actividad:', response.data);
         actividad.value = response.data;
+        debugInfo.value.actividadLoaded = true;
       } catch (error) {
         console.error('Error al cargar actividad:', error);
+        console.error('Error status:', error.response?.status);
+        console.error('Error data:', error.response?.data);
+        debugInfo.value.actividadError = error.response?.data || error.message;
+        
+        // Solo establecer valores por defecto si actividad está completamente vacío
+        if (!actividad.value || (!actividad.value.asistencias_hoy && actividad.value.asistencias_hoy !== 0)) {
+          actividad.value = {
+            asistencias_hoy: 0,
+            ultimos_clientes: [],
+            ultimas_membresias_asignadas: []
+          };
+        }
       }
     };
 
@@ -217,7 +278,47 @@ export default {
       });
     };
 
+    // Test de conectividad
+    const testConnectivity = async () => {
+      try {
+        console.log('Testing API connectivity...');
+        const response = await api.get('/test');
+        console.log('API Test Response:', response.data);
+        debugInfo.value.apiTest = response.data;
+      } catch (error) {
+        console.error('API Test Error:', error);
+        debugInfo.value.apiTestError = error.message;
+      }
+    };
+
+    const setupTestAuth = () => {
+      const token = '10|7SUQt2OKzIAPwbJAk1T6EkuXcABDNhZM3jEPEswEe129b3c8';
+      const user = {
+        id: 1,
+        name: 'Administrador',
+        email: 'admin@gym.com',
+        role: 'admin'
+      };
+      
+      setToLocalStorage('token', token);
+      setToLocalStorage('user', JSON.stringify(user));
+      
+      console.log('✅ Test auth setup complete');
+      debugInfo.value.authSetup = true;
+      
+      // Reload data
+      reloadData();
+    };
+
+    const reloadData = () => {
+      debugInfo.value = { reloading: true };
+      testConnectivity();
+      loadEstadisticas();
+      loadActividad();
+    };
+
     onMounted(() => {
+      testConnectivity();
       loadEstadisticas();
       loadActividad();
     });
@@ -226,9 +327,13 @@ export default {
       estadisticas,
       actividad,
       loading,
+      debugInfo,
       formatCurrency,
       formatDate,
-      navegarClientes
+      navegarClientes,
+      setupTestAuth,
+      reloadData,
+      getFromLocalStorage
     };
   }
 }

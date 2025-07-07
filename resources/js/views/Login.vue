@@ -47,15 +47,7 @@
         </form>
       </template>
       
-      <template #footer>
-        <div class="login-footer">
-          <small>
-            <strong>Credenciales de prueba:</strong><br>
-            Admin: admin@gym.com / password<br>
-            Secretario: secretario@gym.com / password
-          </small>
-        </div>
-      </template>
+    
     </Card>
   </div>
 </template>

@@ -34,6 +34,11 @@
           <i class="pi pi-calendar-times"></i>
           Asistencias
         </router-link>
+        
+        <a href="/asistencia" target="_blank" class="nav-item nav-external">
+          <i class="pi pi-external-link"></i>
+          Asistencia Pública
+        </a>
       </nav>
     </div>
 
@@ -180,6 +185,16 @@ export default {
 .nav-item.active {
   background: #3b82f6;
   color: white;
+}
+
+.nav-external {
+  border-top: 1px solid #334155;
+  margin-top: 0.5rem;
+  position: relative;
+}
+
+.nav-external:hover {
+  background: #059669;
 }
 
 .main-content {

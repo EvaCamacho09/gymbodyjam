@@ -31,7 +31,7 @@ Route::get('/test', function () {
 // Rutas públicas de autenticación
 Route::post('/login', [AuthController::class, 'login']);
 
-// Rutas protegidas con autenticación
+// Rutas protegidas con autenticación Sanctum
 Route::middleware('auth:sanctum')->group(function () {
     // Autenticación
     Route::post('/logout', [AuthController::class, 'logout']);

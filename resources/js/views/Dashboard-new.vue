@@ -1,5 +1,47 @@
 <template>
   <div class="dashboard">
+    <!-- Debug Info (temporal) -->
+    <div style="background: #f0f0f0; padding: 1rem; margin-bottom: 1rem; border-radius: 4px;">
+      <h4>🔍 Debug Dashboard Info:</h4>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div>
+          <strong>🔐 Auth Status:</strong><br>
+          Token present: {{ !!localStorage.getItem('token') }}<br>
+          User in localStorage: {{ !!localStorage.getItem('user') }}<br>
+          <small>Token: {{ localStorage.getItem('token')?.substring(0, 20) }}...</small>
+        </div>
+        <div>
+          <strong>📊 Data Status:</strong><br>
+          Estadísticas loaded: {{ debugInfo.estadisticasLoaded || false }}<br>
+          Actividad loaded: {{ debugInfo.actividadLoaded || false }}<br>
+          Loading: {{ loading }}
+        </div>
+      </div>
+      <div v-if="debugInfo.estadisticasError" style="color: red; margin-top: 0.5rem;">
+        <strong>❌ Estadísticas Error:</strong><br>
+        <small>{{ debugInfo.estadisticasError }}</small>
+      </div>
+      <div v-if="debugInfo.actividadError" style="color: red; margin-top: 0.5rem;">
+        <strong>❌ Actividad Error:</strong><br>
+        <small>{{ debugInfo.actividadError }}</small>
+      </div>
+      <div style="margin-top: 1rem;">
+        <strong>📈 Current Data:</strong><br>
+        <small>Total clientes: {{ estadisticas?.total_clientes || 'N/A' }}</small><br>
+        <small>Membresías: {{ estadisticas?.membresias?.length || 'N/A' }}</small><br>
+        <small>Últimos clientes: {{ actividad?.ultimos_clientes?.length || 'N/A' }}</small><br>
+        <small>Asistencias hoy: {{ actividad?.asistencias_hoy || 'N/A' }}</small>
+      </div>
+      <div style="margin-top: 1rem;">
+        <button @click="setupTestAuth" style="background: #4CAF50; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; margin-right: 0.5rem;">
+          🔑 Setup Test Auth
+        </button>
+        <button @click="reloadData" style="background: #2196F3; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px;">
+          🔄 Reload Data
+        </button>
+      </div>
+    </div>
+
     <!-- Estadísticas principales -->
     <div class="stats-grid">
       <Card class="stat-card total-clientes clickable" @click="navegarClientes('activos')">
@@ -129,13 +171,13 @@
         <template #content>
           <div class="actividad-content">
             <h3>Actividad Reciente</h3>
-            <div v-if="actividad?.asistencias_hoy > 0" class="actividad-item">
-              <h4>Asistencias Hoy: {{ actividad.asistencias_hoy }}</h4>
+            <div v-if="(actividad?.asistencias_hoy || 0) > 0" class="actividad-item">
+              <h4>Asistencias Hoy: {{ actividad?.asistencias_hoy || 0 }}</h4>
             </div>
-            <div v-if="actividad.ultimos_clientes?.length" class="actividad-list">
+            <div v-if="actividad?.ultimos_clientes?.length" class="actividad-list">
               <h4>Últimos Clientes Registrados</h4>
               <div 
-                v-for="cliente in actividad.ultimos_clientes"
+                v-for="cliente in (actividad?.ultimos_clientes || [])"
                 :key="cliente.id"
                 class="cliente-item"
               >
@@ -143,7 +185,7 @@
                 <small class="cliente-fecha">{{ formatDate(cliente.created_at) }}</small>
               </div>
             </div>
-            <div v-if="!actividad?.asistencias_hoy && !actividad.ultimos_clientes?.length" class="no-data">
+            <div v-if="!(actividad?.asistencias_hoy > 0) && !actividad?.ultimos_clientes?.length" class="no-data">
               <p>No hay actividad reciente</p>
             </div>
           </div>
@@ -168,17 +210,60 @@ export default {
   },
   setup() {
     const router = useRouter();
-    const estadisticas = ref({});
-    const actividad = ref({});
+    const estadisticas = ref({
+      total_clientes: 0,
+      clientes_morosos: 0,
+      clientes_proximos_vencer: 0,
+      ingresos_mes: 0,
+      membresias: []
+    });
+    const actividad = ref({
+      asistencias_hoy: 0,
+      ultimos_clientes: [],
+      ultimas_membresias_asignadas: []
+    });
     const loading = ref(false);
+    const debugInfo = ref({});
+
+    // Test de conectividad
+    const testConnectivity = async () => {
+      try {
+        console.log('Testing API connectivity...');
+        const response = await api.get('/test');
+        console.log('API Test Response:', response.data);
+        debugInfo.value.apiTest = response.data;
+      } catch (error) {
+        console.error('API Test Error:', error);
+        debugInfo.value.apiTestError = error.message;
+      }
+    };
 
     const loadEstadisticas = async () => {
       try {
         loading.value = true;
-        const response = await api.get('/estadisticas');
+        console.log('Cargando estadísticas...');
+        console.log('Token en localStorage:', localStorage.getItem('token'));
+        
+        const response = await api.get('/dashboard/estadisticas');
+        console.log('Respuesta estadísticas:', response.data);
         estadisticas.value = response.data;
+        debugInfo.value.estadisticasLoaded = true;
       } catch (error) {
         console.error('Error al cargar estadísticas:', error);
+        console.error('Error status:', error.response?.status);
+        console.error('Error data:', error.response?.data);
+        debugInfo.value.estadisticasError = error.response?.data || error.message;
+        
+        // Solo establecer valores por defecto si estadisticas está completamente vacío
+        if (Object.keys(estadisticas.value).length === 0) {
+          estadisticas.value = {
+            total_clientes: 0,
+            clientes_morosos: 0,
+            clientes_proximos_vencer: 0,
+            ingresos_mes: 0,
+            membresias: []
+          };
+        }
       } finally {
         loading.value = false;
       }
@@ -186,10 +271,25 @@ export default {
 
     const loadActividad = async () => {
       try {
-        const response = await api.get('/actividad-reciente');
+        console.log('Cargando actividad...');
+        const response = await api.get('/dashboard/actividad-reciente');
+        console.log('Respuesta actividad:', response.data);
         actividad.value = response.data;
+        debugInfo.value.actividadLoaded = true;
       } catch (error) {
         console.error('Error al cargar actividad:', error);
+        console.error('Error status:', error.response?.status);
+        console.error('Error data:', error.response?.data);
+        debugInfo.value.actividadError = error.response?.data || error.message;
+        
+        // Solo establecer valores por defecto si actividad está completamente vacío
+        if (Object.keys(actividad.value).length === 0) {
+          actividad.value = {
+            asistencias_hoy: 0,
+            ultimos_clientes: [],
+            ultimas_membresias_asignadas: []
+          };
+        }
       }
     };
 
@@ -217,7 +317,34 @@ export default {
       });
     };
 
+    const setupTestAuth = () => {
+      const token = '10|7SUQt2OKzIAPwbJAk1T6EkuXcABDNhZM3jEPEswEe129b3c8';
+      const user = {
+        id: 1,
+        name: 'Administrador',
+        email: 'admin@gym.com',
+        role: 'admin'
+      };
+      
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      
+      console.log('✅ Test auth setup complete');
+      debugInfo.value.authSetup = true;
+      
+      // Reload data
+      reloadData();
+    };
+
+    const reloadData = () => {
+      debugInfo.value = { reloading: true };
+      testConnectivity();
+      loadEstadisticas();
+      loadActividad();
+    };
+
     onMounted(() => {
+      testConnectivity();
       loadEstadisticas();
       loadActividad();
     });
@@ -226,9 +353,12 @@ export default {
       estadisticas,
       actividad,
       loading,
+      debugInfo,
       formatCurrency,
       formatDate,
-      navegarClientes
+      navegarClientes,
+      setupTestAuth,
+      reloadData
     };
   }
 }

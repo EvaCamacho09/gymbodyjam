@@ -168,7 +168,7 @@
           <Column header="Acciones">
             <template #body="{ data }">
               <Button
-                v-if="esHoy(data.fecha_ingreso) && permissions.canDeleteAsistencias"
+                v-if="permissions.canDeleteAsistencias"
                 icon="pi pi-trash"
                 class="p-button-rounded p-button-text p-button-danger p-button-sm"
                 @click="confirmarEliminar(data)"
