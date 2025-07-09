@@ -79,15 +79,22 @@
             z-index: -1;
         }
 
+
         .cliente-container {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.15);
+            /* Blanco translúcido */
             backdrop-filter: blur(10px);
+            /* Difuminado detrás */
+            -webkit-backdrop-filter: blur(10px);
+            /* Compatibilidad Safari */
             border: 1px solid rgba(255, 255, 255, 0.2);
+            /* Borde sutil */
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            /* Sombra oscura */
             padding: 40px;
             width: 100%;
-            max-width: 400px;
+            max-width: 600px;
             text-align: center;
             position: relative;
             z-index: 1;
@@ -103,8 +110,12 @@
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
+        .info-row {
+            color: white;
+        }
+
         .subtitle {
-            color: #333;
+            color: white;
             font-size: 1rem;
             margin-bottom: 30px;
             font-weight: 500;

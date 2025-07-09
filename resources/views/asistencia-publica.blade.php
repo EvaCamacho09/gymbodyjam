@@ -16,26 +16,75 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
             user-select: none;
-            /* Evitar selección de texto en pantallas táctiles */
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Fondo con imágenes rotativas */
+        .background-slider {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+
+        .background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+        }
+
+        .background-image.active {
+            opacity: 1;
+        }
+
+        /* Overlay con blur y oscurecimiento */
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(1px);
+            background: rgba(0, 0, 0, 0.4);
+            z-index: -1;
         }
 
         .container {
-            background: white;
+            background: rgba(255, 255, 255, 0.15);
+            /* Blanco translúcido */
+            backdrop-filter: blur(10px);
+            /* Difuminado detrás */
+            -webkit-backdrop-filter: blur(10px);
+            /* Compatibilidad Safari */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            /* Borde sutil */
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            /* Sombra oscura */
             padding: 40px;
             width: 100%;
             max-width: 600px;
-            /* Más ancho para pantallas táctiles */
             text-align: center;
+            position: relative;
+            z-index: 1;
         }
+
 
         .logo {
             font-size: 2.5rem;
@@ -44,6 +93,7 @@
             margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .logo-image {
@@ -54,7 +104,7 @@
             margin: 20px auto;
             display: block;
             border: 4px solid #667eea;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
             transition: transform 0.3s ease;
         }
 
@@ -62,12 +112,11 @@
             transform: scale(1.05);
         }
 
-
-
         .subtitle {
-            color: #666;
+            color: white;
             font-size: 1.1rem;
             margin-bottom: 40px;
+            font-weight: 500;
         }
 
         .form-group {
@@ -86,33 +135,29 @@
         input[type="text"] {
             width: 100%;
             padding: 20px;
-            /* Más grande para touch */
-            border: 2px solid #e1e5e9;
+            border: 2px solid rgba(225, 229, 233, 0.8);
             border-radius: 10px;
             font-size: 1.3rem;
-            /* Texto más grande */
             transition: all 0.3s ease;
-            background: #f8f9fa;
+            background: rgba(248, 249, 250, 0.9);
+            backdrop-filter: blur(5px);
             text-align: center;
-            /* Centrar texto para mejor apariencia */
         }
 
         input[type="text"]:focus {
             outline: none;
             border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
         }
 
         .btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 20px 30px;
-            /* Más grande para touch */
             border: none;
             border-radius: 10px;
             font-size: 1.4rem;
-            /* Texto más grande */
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -120,12 +165,12 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             min-height: 60px;
-            /* Altura mínima para touch */
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
         }
 
         .btn:active {
@@ -145,48 +190,44 @@
         }
 
         .cliente-item {
-            background: #f8f9fa;
-            border: 2px solid #e1e5e9;
+            background: rgba(248, 249, 250, 0.9);
+            border: 2px solid rgba(225, 229, 233, 0.8);
             border-radius: 10px;
             padding: 20px;
-            /* Más grande para touch */
             margin-bottom: 15px;
             cursor: pointer;
             transition: all 0.3s ease;
             min-height: 80px;
-            /* Altura mínima para touch */
             display: flex;
             flex-direction: column;
             justify-content: center;
+            backdrop-filter: blur(5px);
         }
 
         .cliente-item:hover,
         .cliente-item:active {
             border-color: #667eea;
-            background: #f0f2ff;
+            background: rgba(240, 242, 255, 0.9);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
         .cliente-nombre {
             font-weight: 600;
             color: #333;
             font-size: 1.3rem;
-            /* Texto más grande */
             margin-bottom: 5px;
         }
 
         .cliente-cedula {
             color: #666;
             font-size: 1rem;
-            /* Texto más grande */
             margin-bottom: 5px;
         }
 
         .cliente-membresia {
             margin-top: 8px;
             font-size: 1rem;
-            /* Texto más grande */
             font-weight: 500;
         }
 
@@ -208,7 +249,7 @@
         }
 
         .spinner {
-            border: 3px solid #f3f3f3;
+            border: 3px solid rgba(243, 243, 243, 0.3);
             border-top: 3px solid #667eea;
             border-radius: 50%;
             width: 30px;
@@ -232,17 +273,18 @@
             border-radius: 10px;
             margin: 20px 0;
             font-weight: 500;
+            backdrop-filter: blur(5px);
         }
 
         .alert-success {
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
+            background: rgba(212, 237, 218, 0.9);
+            border: 1px solid rgba(195, 230, 203, 0.8);
             color: #155724;
         }
 
         .alert-error {
-            background: #f8d7da;
-            border: 1px solid #f5c6cb;
+            background: rgba(248, 215, 218, 0.9);
+            border: 1px solid rgba(245, 198, 203, 0.8);
             color: #721c24;
         }
 
@@ -260,7 +302,8 @@
         }
 
         .modal-content {
-            background-color: white;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             margin: 10% auto;
             padding: 30px;
             border-radius: 20px;
@@ -268,7 +311,8 @@
             max-width: 400px;
             text-align: center;
             animation: slideIn 0.3s ease;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         @keyframes fadeIn {
@@ -329,11 +373,111 @@
         }
 
         .dias-info {
-            background: #f8f9fa;
+            background: rgba(248, 249, 250, 0.9);
             padding: 15px;
             border-radius: 10px;
             margin: 15px 0;
             border-left: 4px solid #667eea;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Estilos para autocompletado */
+        .autocomplete-suggestions {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(225, 229, 233, 0.8);
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            position: absolute;
+            width: calc(100% - 4px);
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .autocomplete-suggestion {
+            padding: 15px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(241, 243, 245, 0.8);
+            transition: background-color 0.2s ease;
+        }
+
+        .autocomplete-suggestion:hover,
+        .autocomplete-suggestion.active {
+            background: rgba(240, 242, 255, 0.9);
+        }
+
+        .autocomplete-suggestion:last-child {
+            border-bottom: none;
+        }
+
+        /* Indicador de inactividad */
+        .timeout-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #666;
+            display: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+        }
+
+        /* Indicador de imagen actual */
+        .image-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            backdrop-filter: blur(10px);
+            z-index: 2;
+        }
+
+        /* Header con info de usuario */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(225, 229, 233, 0.8);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
         }
 
         @media (max-width: 768px) {
@@ -371,109 +515,59 @@
             .cliente-nombre {
                 font-size: 1.2rem;
             }
-        }
 
-        /* Estilos para autocompletado */
-        .autocomplete-suggestions {
-            background: white;
-            border: 2px solid #e1e5e9;
-            border-top: none;
-            border-radius: 0 0 10px 10px;
-            max-height: 300px;
-            overflow-y: auto;
-            position: absolute;
-            width: calc(100% - 4px);
-            z-index: 1000;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
+            .image-indicator {
+                bottom: 10px;
+                right: 10px;
+                font-size: 0.7rem;
+                padding: 6px 10px;
+            }
 
-        .autocomplete-suggestion {
-            padding: 15px;
-            cursor: pointer;
-            border-bottom: 1px solid #f1f3f5;
-            transition: background-color 0.2s ease;
-        }
-
-        .autocomplete-suggestion:hover,
-        .autocomplete-suggestion.active {
-            background: #f0f2ff;
-        }
-
-        .autocomplete-suggestion:last-child {
-            border-bottom: none;
-        }
-
-        /* Indicador de inactividad */
-        .timeout-indicator {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 10px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            color: #666;
-            display: none;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Header con info de usuario */
-        .header-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e1e5e9;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #667eea;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .logout-btn {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            background: #dc2626;
-            transform: translateY(-1px);
+            .timeout-indicator {
+                top: 10px;
+                right: 10px;
+                font-size: 0.8rem;
+                padding: 8px 12px;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
+    <!-- Slider de fondo -->
+    <div class="background-slider">
+        <div class="background-image active" data-image="1"></div>
+        <div class="background-image" data-image="2"></div>
+        <div class="background-image" data-image="3"></div>
+        <div class="background-image" data-image="4"></div>
+        <div class="background-image" data-image="5"></div>
+        <div class="background-image" data-image="6"></div>
+    </div>
 
-        
+    <!-- Overlay con blur -->
+    <div class="background-overlay"></div>
+
+    <!-- Indicador de imagen -->
+    <div class="image-indicator">
+        <span id="current-image">Imagen 1/6</span>
+    </div>
+
+    <!-- Indicador de timeout -->
+    <div id="timeoutIndicator" class="timeout-indicator">
+        Auto-reinicio en <span id="timeoutCounter">30</span>s
+    </div>
+
+    <div class="container">
         <div class="logo">GYM MANAGER</div>
         <img src="{{ asset('images/logo.jpg') }}" alt="Gym Manager Logo" class="logo-image" />
-
         <div class="subtitle">Registro de Asistencia</div>
 
         <form id="busquedaForm">
             <div class="form-group" style="position: relative;">
-                
                 <input type="text" id="busqueda" name="busqueda"
                     placeholder="Ingresa tu nombre o número de cédula..." autocomplete="off" required>
                 <div id="autocompleteContainer" class="autocomplete-suggestions"></div>
             </div>
-
             <button type="submit" class="btn" id="buscarBtn">
                 Buscar Cliente
             </button>
@@ -488,11 +582,6 @@
         <div id="alertContainer"></div>
     </div>
 
-    <!-- Indicador de timeout -->
-    <div id="timeoutIndicator" class="timeout-indicator">
-        Auto-reinicio en <span id="timeoutCounter">30</span>s
-    </div>
-
     <!-- Modal de Éxito -->
     <div id="successModal" class="modal">
         <div class="modal-content">
@@ -505,6 +594,20 @@
     </div>
 
     <script>
+        // URLs de las imágenes de Pexels
+        const gymImages = [
+            'https://images.pexels.com/photos/1229356/pexels-photo-1229356.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+            'https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+            'https://images.pexels.com/photos/4944972/pexels-photo-4944972.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+            'https://images.pexels.com/photos/416747/pexels-photo-416747.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+            'https://images.pexels.com/photos/3112004/pexels-photo-3112004.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+            'https://images.pexels.com/photos/1954524/pexels-photo-1954524.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop'
+        ];
+
+        let currentImageIndex = 0;
+        const backgroundImages = document.querySelectorAll('.background-image');
+        const imageIndicator = document.getElementById('current-image');
+
         // Elementos del DOM
         const busquedaForm = document.getElementById('busquedaForm');
         const busquedaInput = document.getElementById('busqueda');
@@ -527,6 +630,49 @@
         let countdownInterval;
         let timeoutSeconds = 30;
 
+        // Función para precargar imágenes
+        function preloadImages() {
+            gymImages.forEach((src, index) => {
+                const img = new Image();
+                img.onload = () => {
+                    backgroundImages[index].style.backgroundImage = `url(${src})`;
+                };
+                img.src = src;
+            });
+        }
+
+        // Función para cambiar imagen
+        function changeImage() {
+            // Ocultar imagen actual
+            backgroundImages[currentImageIndex].classList.remove('active');
+
+            // Cambiar al siguiente índice
+            currentImageIndex = (currentImageIndex + 1) % gymImages.length;
+
+            // Mostrar nueva imagen
+            backgroundImages[currentImageIndex].classList.add('active');
+
+            // Actualizar indicador
+            imageIndicator.textContent = `Imagen ${currentImageIndex + 1}/${gymImages.length}`;
+
+            console.log(`Cambiando a imagen ${currentImageIndex + 1}: ${gymImages[currentImageIndex]}`);
+        }
+
+        // Función para inicializar el slider
+        function initializeSlider() {
+            // Precargar todas las imágenes
+            preloadImages();
+
+            // Configurar la primera imagen
+            backgroundImages[0].style.backgroundImage = `url(${gymImages[0]})`;
+            imageIndicator.textContent = `Imagen 1/${gymImages.length}`;
+
+            // Cambiar imagen cada 30 minutos (1800000 ms)
+            setInterval(changeImage, 1800000);
+
+            console.log('Slider inicializado. Cambio cada 30 minutos.');
+        }
+
         // Event listeners
         busquedaForm.addEventListener('submit', buscarClientes);
         busquedaInput.addEventListener('input', handleInput);
@@ -540,11 +686,8 @@
             const value = e.target.value.trim();
             resetInactivityTimer();
 
-            // Limpiar timeout anterior
             clearTimeout(searchTimeout);
-
             if (value.length >= 2) {
-                // Buscar con debounce
                 searchTimeout = setTimeout(() => {
                     buscarClientesAutocompletado(value);
                 }, 300);
@@ -556,7 +699,6 @@
 
         function handleKeydown(e) {
             const suggestions = autocompleteContainer.children;
-
             switch (e.key) {
                 case 'ArrowDown':
                     e.preventDefault();
@@ -581,6 +723,11 @@
                 case 'Escape':
                     hideAutocomplete();
                     break;
+                case 'n':
+                case 'N':
+                    // Para testing: cambiar imagen manualmente
+                    changeImage();
+                    break;
             }
         }
 
@@ -602,7 +749,8 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                            'content')
                     },
                     body: JSON.stringify({
                         busqueda
@@ -610,7 +758,6 @@
                 });
 
                 const data = await response.json();
-
                 if (data.success && data.clientes.length > 0) {
                     mostrarAutocompletado(data.clientes);
                 } else {
@@ -624,7 +771,6 @@
 
         function mostrarAutocompletado(clientes) {
             currentClientes = clientes;
-
             autocompleteContainer.innerHTML = clientes.map(cliente => {
                 const membresia = cliente.membresia_actual;
                 let estadoText = '';
@@ -647,9 +793,9 @@
                 }
 
                 return `
-                    <div class="autocomplete-suggestion" 
-                         data-cliente-id="${cliente.id}" 
-                         data-cliente-nombre="${cliente.nombre}"
+                    <div class="autocomplete-suggestion"
+                          data-cliente-id="${cliente.id}"
+                          data-cliente-nombre="${cliente.nombre}"
                          onclick="seleccionarCliente(${cliente.id}, '${cliente.nombre}')">
                         <div class="cliente-nombre">${cliente.nombre}</div>
                         <div class="cliente-cedula">Cédula: ${cliente.cedula}</div>
@@ -670,8 +816,8 @@
 
         async function buscarClientes(e) {
             e.preventDefault();
-
             const busqueda = busquedaInput.value.trim();
+
             if (!busqueda || busqueda.length < 2) {
                 mostrarAlerta('Por favor ingresa al menos 2 caracteres', 'error');
                 return;
@@ -686,7 +832,8 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                            'content')
                     },
                     body: JSON.stringify({
                         busqueda
@@ -694,7 +841,6 @@
                 });
 
                 const data = await response.json();
-
                 if (data.success) {
                     mostrarClientes(data.clientes);
                 } else {
@@ -714,7 +860,6 @@
                 return;
             }
 
-            // Si solo hay un cliente, seleccionarlo automáticamente
             if (clientes.length === 1) {
                 const cliente = clientes[0];
                 seleccionarCliente(cliente.id, cliente.nombre);
@@ -732,7 +877,7 @@
                         estadoClass = 'estado-vencida';
                     } else if (membresia.dias_restantes <= 5) {
                         membresiaText =
-                            `${membresia.nombre} - ${Math.abs(membresia.dias_restantes)} días restantes`;
+                        `${membresia.nombre} - ${Math.abs(membresia.dias_restantes)} días restantes`;
                         estadoClass = 'estado-por-vencer';
                     } else {
                         membresiaText = `${membresia.nombre} - ${membresia.dias_restantes} días restantes`;
@@ -762,7 +907,8 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                            'content')
                     },
                     body: JSON.stringify({
                         cliente_id: clienteId
@@ -770,9 +916,7 @@
                 });
 
                 const data = await response.json();
-
                 if (data.success) {
-                    // Mostrar modal de éxito
                     modalText.textContent =
                         `¡Hola ${data.cliente.nombre}! Tu asistencia ha sido registrada exitosamente.`;
 
@@ -794,15 +938,12 @@
                     }
 
                     diasInfo.innerHTML = `<div class="${diasClass}">${diasText}</div>`;
-
                     successModal.style.display = 'block';
 
-                    // Auto-cerrar modal después de 5 segundos
                     setTimeout(() => {
                         closeModal();
                         reiniciarFormulario();
                     }, 5000);
-
                 } else {
                     mostrarAlerta(data.message, 'error');
                 }
@@ -821,7 +962,6 @@
             timeoutIndicator.style.display = 'none';
             timeoutSeconds = 30;
 
-            // Reiniciar timer de inactividad después de 2 minutos
             inactivityTimeout = setTimeout(() => {
                 startCountdown();
             }, 120000); // 2 minutos
@@ -830,11 +970,9 @@
         function startCountdown() {
             timeoutSeconds = 30;
             timeoutIndicator.style.display = 'block';
-
             countdownInterval = setInterval(() => {
                 timeoutSeconds--;
                 timeoutCounter.textContent = timeoutSeconds;
-
                 if (timeoutSeconds <= 0) {
                     reiniciarFormulario();
                 }
@@ -846,25 +984,21 @@
             clearInterval(countdownInterval);
             timeoutIndicator.style.display = 'none';
 
-            // Limpiar todos los campos y estados
             busquedaInput.value = '';
             limpiarResultados();
             hideAutocomplete();
             mostrarLoading(false);
 
-            // Enfocar el input
             setTimeout(() => {
                 busquedaInput.focus();
             }, 100);
 
-            // Reiniciar timer
             resetInactivityTimer();
         }
 
         function mostrarLoading(show) {
             loading.style.display = show ? 'block' : 'none';
             buscarBtn.disabled = show;
-
             if (show) {
                 hideAutocomplete();
             }
@@ -882,7 +1016,6 @@
                 </div>
             `;
 
-            // Auto-ocultar después de 5 segundos
             setTimeout(() => {
                 alertContainer.innerHTML = '';
             }, 5000);
@@ -907,6 +1040,7 @@
 
         // Inicialización
         window.addEventListener('load', function() {
+            initializeSlider();
             busquedaInput.focus();
             resetInactivityTimer();
         });

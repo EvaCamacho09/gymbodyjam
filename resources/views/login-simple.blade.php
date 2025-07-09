@@ -63,19 +63,26 @@
             z-index: -1;
         }
 
-        .login-container {
-            background: rgba(255, 255, 255, 0.95);
+        .login-container  {
+            background: rgba(255, 255, 255, 0.15);
+            /* Blanco translúcido */
             backdrop-filter: blur(10px);
+            /* Difuminado detrás */
+            -webkit-backdrop-filter: blur(10px);
+            /* Compatibilidad Safari */
             border: 1px solid rgba(255, 255, 255, 0.2);
+            /* Borde sutil */
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            /* Sombra oscura */
             padding: 40px;
             width: 100%;
-            max-width: 400px;
+            max-width: 600px;
             text-align: center;
             position: relative;
             z-index: 1;
         }
+
 
         .logo {
             font-size: 2rem;
@@ -88,7 +95,7 @@
         }
 
         .subtitle {
-            color: #333;
+            color: white;
             font-size: 1rem;
             margin-bottom: 30px;
             font-weight: 500;
@@ -103,7 +110,7 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
+            color: white;
             font-size: 0.9rem;
         }
 
@@ -280,7 +287,7 @@
         </form>
 
         <div class="back-link">
-            <a href="/">← Volver al inicio</a>
+            <a href="/"><strong>← REGRESAR AL MODO ADMINISTRADOR</strong></a>
         </div>
     </div>
 
