@@ -21,8 +21,8 @@ class ClienteController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('nombre', 'LIKE', "%{$search}%")
-                  ->orWhere('cedula', 'LIKE', "%{$search}%")
-                  ->orWhere('correo', 'LIKE', "%{$search}%");
+                    ->orWhere('cedula', 'LIKE', "%{$search}%")
+                    ->orWhere('correo', 'LIKE', "%{$search}%");
             });
         }
 
@@ -36,26 +36,26 @@ class ClienteController extends Controller
                 case 'moroso':
                     $query->whereHas('membresias', function ($q) {
                         $q->where('fecha_vencimiento', '<', now())
-                          ->whereNull('deleted_at');
+                            ->whereNull('deleted_at');
                     });
                     break;
-                    
+
                 case 'proximos':
                     $fechaLimite = now()->addDays(7);
                     $query->whereHas('membresias', function ($q) use ($fechaLimite) {
                         $q->where('fecha_vencimiento', '>=', now())
-                          ->where('fecha_vencimiento', '<=', $fechaLimite)
-                          ->whereNull('deleted_at');
+                            ->where('fecha_vencimiento', '<=', $fechaLimite)
+                            ->whereNull('deleted_at');
                     });
                     break;
-                    
+
                 case 'activa':
                     $query->whereHas('membresias', function ($q) {
                         $q->where('fecha_vencimiento', '>', now())
-                          ->whereNull('deleted_at');
+                            ->whereNull('deleted_at');
                     });
                     break;
-                    
+
                 case 'sin_membresia':
                     $query->whereDoesntHave('membresias', function ($q) {
                         $q->whereNull('deleted_at');
@@ -86,8 +86,25 @@ class ClienteController extends Controller
             'correo' => 'nullable|email|max:255',
             'telefono' => 'nullable|string|max:20',
             'estado' => 'required|in:activo,inactivo',
-        ]);
 
+            // Nuevos campos de medidas corporales
+            'peso' => 'nullable|numeric|min:0',
+            'altura' => 'nullable|numeric|min:0',
+            'porcentaje_grasa' => 'nullable|numeric|min:0|max:100',
+            'masa_muscular' => 'nullable|numeric|min:0',
+            'cintura' => 'nullable|numeric|min:0',
+            'cadera' => 'nullable|numeric|min:0',
+            'pecho_torax' => 'nullable|numeric|min:0',
+            'biceps_relajado' => 'nullable|numeric|min:0',
+            'biceps_contraido' => 'nullable|numeric|min:0',
+            'antebrazo' => 'nullable|numeric|min:0',
+            'muslo' => 'nullable|numeric|min:0',
+            'pantorrilla' => 'nullable|numeric|min:0',
+            'frecuencia_cardiaca' => 'nullable|integer|min:0',
+            'presion_arterial' => 'nullable|string|max:10',
+            'observaciones' => 'nullable|string|max:1000',
+        ]);
+        
         $cliente = Cliente::create($request->all());
 
         return response()->json([
@@ -109,7 +126,7 @@ class ClienteController extends Controller
         ]);
 
         $membresiaActiva = $cliente->membresiaActiva();
-        
+
         return response()->json([
             'cliente' => $cliente,
             'membresia_activa' => $membresiaActiva ? [
@@ -142,8 +159,8 @@ class ClienteController extends Controller
         $request->validate([
             'nombre' => 'required|string|max:255',
             'cedula' => [
-                'required', 
-                'string', 
+                'required',
+                'string',
                 Rule::unique('clientes')->ignore($cliente->id)
             ],
             'correo' => 'nullable|email|max:255',
@@ -189,10 +206,10 @@ class ClienteController extends Controller
     public function proximosVencer()
     {
         $fechaLimite = now()->addDays(5);
-        
+
         $clientes = Cliente::whereHas('membresias', function ($query) use ($fechaLimite) {
             $query->where('fecha_vencimiento', '>=', now())
-                  ->where('fecha_vencimiento', '<=', $fechaLimite);
+                ->where('fecha_vencimiento', '<=', $fechaLimite);
         })->with('membresias')->get();
 
         return response()->json($clientes);
@@ -205,7 +222,7 @@ class ClienteController extends Controller
     {
         $token = $cliente->obtenerToken();
         $url = $cliente->urlPublica();
-        
+
         return response()->json([
             'token' => $token,
             'url' => $url,

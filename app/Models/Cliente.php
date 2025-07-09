@@ -11,11 +11,27 @@ class Cliente extends Model
 
     protected $fillable = [
         'nombre',
-        'cedula', 
+        'cedula',
         'correo',
         'telefono',
         'estado',
-        'token'
+        'token',
+        'peso',
+        'altura',
+        'imc',
+        'porcentaje_grasa',
+        'masa_muscular',
+        'cintura',
+        'cadera',
+        'pecho_torax',
+        'biceps_relajado',
+        'biceps_contraido',
+        'antebrazo',
+        'muslo',
+        'pantorrilla',
+        'frecuencia_cardiaca',
+        'presion_arterial',
+        'observaciones',
     ];
 
     /**
@@ -24,8 +40,8 @@ class Cliente extends Model
     public function membresias()
     {
         return $this->belongsToMany(Membresia::class, 'cliente_membresia')
-                    ->withPivot('fecha_inicio', 'fecha_vencimiento', 'precio_pagado', 'estado_pago')
-                    ->withTimestamps();
+            ->withPivot('fecha_inicio', 'fecha_vencimiento', 'precio_pagado', 'estado_pago')
+            ->withTimestamps();
     }
 
     /**
@@ -34,10 +50,10 @@ class Cliente extends Model
     public function membresiaActiva()
     {
         return $this->belongsToMany(Membresia::class, 'cliente_membresia')
-                    ->withPivot('fecha_inicio', 'fecha_vencimiento', 'precio_pagado', 'estado_pago')
-                    ->wherePivot('fecha_vencimiento', '>=', now())
-                    ->latest('pivot_fecha_inicio')
-                    ->first();
+            ->withPivot('fecha_inicio', 'fecha_vencimiento', 'precio_pagado', 'estado_pago')
+            ->wherePivot('fecha_vencimiento', '>=', now())
+            ->latest('pivot_fecha_inicio')
+            ->first();
     }
 
     /**
@@ -58,10 +74,10 @@ class Cliente extends Model
         if (!$membresiaActiva) {
             return null; // Sin membresía
         }
-        
+
         return now()->diffInDays($membresiaActiva->pivot->fecha_vencimiento, false);
     }
-    
+
     /**
      * Relación con asistencias
      */
@@ -109,12 +125,12 @@ class Cliente extends Model
     {
         $membresiaActiva = $this->membresiaActiva();
         $membresiaValida = $membresiaActiva && !$this->esMoroso();
-        
+
         // Si no tiene membresía válida y no se permite sin membresía, lanzar excepción
         if (!$membresiaValida && !$permitirSinMembresia) {
             throw new \Exception('El cliente no tiene una membresía válida');
         }
-        
+
         return $this->asistencias()->create([
             'cliente_membresia_id' => $membresiaActiva?->pivot->id,
             'fecha_ingreso' => now(),
@@ -122,7 +138,7 @@ class Cliente extends Model
             'observaciones' => $observaciones
         ]);
     }
-    
+
     /**
      * Generar un token único para el cliente
      */
@@ -131,11 +147,11 @@ class Cliente extends Model
         do {
             $token = bin2hex(random_bytes(32));
         } while (static::where('token', $token)->exists());
-        
+
         $this->update(['token' => $token]);
         return $token;
     }
-    
+
     /**
      * Obtener o generar token
      */
@@ -146,12 +162,24 @@ class Cliente extends Model
         }
         return $this->token;
     }
-    
+
     /**
      * Generar URL pública para el cliente
      */
     public function urlPublica(): string
     {
         return url('/cliente/' . $this->obtenerToken());
+    }
+
+    public function calcularYGuardarImc(): void
+    {
+        if ($this->peso && $this->altura) {
+            $alturaMetros = $this->altura / 100;
+
+            if ($alturaMetros > 0) {
+                $this->imc = round($this->peso / ($alturaMetros ** 2), 2);
+                $this->save();
+            }
+        }
     }
 }

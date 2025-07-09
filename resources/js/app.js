@@ -9,6 +9,7 @@ import 'primeicons/primeicons.css';
 // Componentes de PrimeVue
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import InputNumber from 'primevue/inputnumber';
 import Password from 'primevue/password';
 import Card from 'primevue/card';
 import DataTable from 'primevue/datatable';
@@ -50,5 +51,6 @@ app.component('Tag', Tag);
 app.component('Textarea', Textarea);
 app.component('Checkbox', Checkbox);
 app.component('Dropdown', Dropdown);
+app.component('InputNumber', InputNumber);
 
 app.mount('#app');

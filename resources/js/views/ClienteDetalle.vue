@@ -38,6 +38,50 @@
       </div>
     </div>
 
+    <div class="info-list mb-2">
+      <!-- Medidas -->
+      <Card class="estadisticas-asistencias">
+        <template #title>
+          <h3><i class="pi pi-chart-bar"></i> Estadísticas de Asistencia</h3>
+        </template>
+        <template #content>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-number">
+                {{ estadisticas.total_asistencias }}
+              </div>
+              <div class="stat-label">Total Asistencias</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">{{ estadisticas.asistencias_mes }}</div>
+              <div class="stat-label">Este Mes</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">
+                <Tag
+                  :value="estadisticas.ya_ingreso_hoy ? 'Sí' : 'No'"
+                  :severity="
+                    estadisticas.ya_ingreso_hoy ? 'success' : 'secondary'
+                  "
+                />
+              </div>
+              <div class="stat-label">Ingreso Hoy</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">
+                <Tag
+                  :value="estadisticas.es_moroso ? 'Sí' : 'No'"
+                  :severity="estadisticas.es_moroso ? 'danger' : 'success'"
+                />
+              </div>
+              <div class="stat-label">Moroso</div>
+            </div>
+          </div>
+        </template>
+      </Card>
+    </div>
+    <br>
+
     <!-- Información del cliente -->
     <div class="cliente-info-grid">
       <!-- Datos personales -->
@@ -57,11 +101,11 @@
             </div>
             <div class="info-item">
               <strong>Email:</strong>
-              <span>{{ cliente.correo || 'No registrado' }}</span>
+              <span>{{ cliente.correo || "No registrado" }}</span>
             </div>
             <div class="info-item">
               <strong>Teléfono:</strong>
-              <span>{{ cliente.telefono || 'No registrado' }}</span>
+              <span>{{ cliente.telefono || "No registrado" }}</span>
             </div>
             <div class="info-item">
               <strong>Estado:</strong>
@@ -103,14 +147,20 @@
               </div>
               <div class="detalle-item">
                 <strong>Fecha vencimiento:</strong>
-                <span>{{ formatearFecha(membresiaActiva.fecha_vencimiento) }}</span>
+                <span>{{
+                  formatearFecha(membresiaActiva.fecha_vencimiento)
+                }}</span>
               </div>
               <div class="detalle-item">
                 <strong>Días restantes:</strong>
-                <span :class="{
-                  'text-danger': membresiaActiva.dias_restantes === 0,
-                  'text-warning': membresiaActiva.dias_restantes <= 7 && membresiaActiva.dias_restantes > 0
-                }">
+                <span
+                  :class="{
+                    'text-danger': membresiaActiva.dias_restantes === 0,
+                    'text-warning':
+                      membresiaActiva.dias_restantes <= 7 &&
+                      membresiaActiva.dias_restantes > 0,
+                  }"
+                >
                   {{ membresiaActiva.dias_restantes }} días
                 </span>
               </div>
@@ -118,7 +168,11 @@
                 <strong>Estado de pago:</strong>
                 <Tag
                   :value="membresiaActiva.estado_pago"
-                  :severity="membresiaActiva.estado_pago === 'pagado' ? 'success' : 'warning'"
+                  :severity="
+                    membresiaActiva.estado_pago === 'pagado'
+                      ? 'success'
+                      : 'warning'
+                  "
                 />
               </div>
             </div>
@@ -146,7 +200,10 @@
             </div>
           </div>
           <div v-else class="sin-membresia">
-            <p><i class="pi pi-info-circle"></i> Este cliente no tiene una membresía activa</p>
+            <p>
+              <i class="pi pi-info-circle"></i> Este cliente no tiene una
+              membresía activa
+            </p>
             <Button
               label="Asignar Membresía"
               icon="pi pi-plus"
@@ -158,47 +215,89 @@
       </Card>
     </div>
 
-    <!-- Estadísticas de asistencia -->
-    <Card class="estadisticas-asistencia">
+    <!-- Estadísticas de medidas -->
+    <Card class="medidas">
       <template #title>
-        <h3><i class="pi pi-chart-bar"></i> Estadísticas de Asistencia</h3>
+        <h3><i class="pi pi-calculator"></i>Medidas Corporales</h3>
       </template>
       <template #content>
-        <div class="stats-grid">
-          <div class="stat-item">
-            <div class="stat-number">{{ estadisticas.total_asistencias }}</div>
-            <div class="stat-label">Total Asistencias</div>
+        <div class="cliente-info-grid">
+          <!-- Nuevos campos de medidas -->
+          <div class="info-item" v-if="cliente.peso">
+            <strong>Peso:</strong>
+            <span>{{ cliente.peso }} kg</span>
           </div>
-          <div class="stat-item">
-            <div class="stat-number">{{ estadisticas.asistencias_mes }}</div>
-            <div class="stat-label">Este Mes</div>
+          <div class="info-item" v-if="cliente.altura">
+            <strong>Altura:</strong>
+            <span>{{ cliente.altura }} cm</span>
           </div>
-          <div class="stat-item">
-            <div class="stat-number">
-              <Tag
-                :value="estadisticas.ya_ingreso_hoy ? 'Sí' : 'No'"
-                :severity="estadisticas.ya_ingreso_hoy ? 'success' : 'secondary'"
-              />
-            </div>
-            <div class="stat-label">Ingreso Hoy</div>
+          <div class="info-item" v-if="cliente.imc">
+            <strong>IMC:</strong>
+            <span>{{ cliente.imc }}</span>
           </div>
-          <div class="stat-item">
-            <div class="stat-number">
-              <Tag
-                :value="estadisticas.es_moroso ? 'Sí' : 'No'"
-                :severity="estadisticas.es_moroso ? 'danger' : 'success'"
-              />
-            </div>
-            <div class="stat-label">Moroso</div>
+          <div class="info-item" v-if="cliente.porcentaje_grasa">
+            <strong>% Grasa Corporal:</strong>
+            <span>{{ cliente.porcentaje_grasa }}%</span>
+          </div>
+          <div class="info-item" v-if="cliente.masa_muscular">
+            <strong>Masa Muscular:</strong>
+            <span>{{ cliente.masa_muscular }} kg</span>
+          </div>
+          <div class="info-item" v-if="cliente.cintura">
+            <strong>Cintura:</strong>
+            <span>{{ cliente.cintura }} cm</span>
+          </div>
+          <div class="info-item" v-if="cliente.cadera">
+            <strong>Cadera:</strong>
+            <span>{{ cliente.cadera }} cm</span>
+          </div>
+          <div class="info-item" v-if="cliente.pecho_torax">
+            <strong>Pecho / Tórax:</strong>
+            <span>{{ cliente.pecho_torax }} cm</span>
+          </div>
+          <div class="info-item" v-if="cliente.biceps_relajado">
+            <strong>Bíceps Relajado:</strong>
+            <span>{{ cliente.biceps_relajado }} cm</span>
+          </div>
+          <div class="info-item" v-if="cliente.biceps_contraido">
+            <strong>Bíceps Contraído:</strong>
+            <span>{{ cliente.biceps_contraido }} cm</span>
+          </div>
+          <div class="info-item" v-if="cliente.antebrazo">
+            <strong>Antebrazo:</strong>
+            <span>{{ cliente.antebrazo }} cm</span>
+          </div>
+          <div class="info-item" v-if="cliente.muslo">
+            <strong>Muslo:</strong>
+            <span>{{ cliente.muslo }} cm</span>
+          </div>
+          <div class="info-item" v-if="cliente.pantorrilla">
+            <strong>Pantorrilla:</strong>
+            <span>{{ cliente.pantorrilla }} cm</span>
+          </div>
+          <div class="info-item" v-if="cliente.frecuencia_cardiaca">
+            <strong>Frecuencia Cardíaca:</strong>
+            <span>{{ cliente.frecuencia_cardiaca }} lpm</span>
+          </div>
+          <div class="info-item" v-if="cliente.presion_arterial">
+            <strong>Presión Arterial:</strong>
+            <span>{{ cliente.presion_arterial }}</span>
+          </div>
+          <div class="info-item" v-if="cliente.observaciones">
+            <strong>Observaciones:</strong>
+            <span>{{ cliente.observaciones }}</span>
           </div>
         </div>
       </template>
     </Card>
+    <br>
 
     <!-- Historial de asistencias -->
     <Card class="historial-asistencias">
       <template #title>
-        <h3><i class="pi pi-calendar"></i> Historial de Asistencias (Últimas 10)</h3>
+        <h3>
+          <i class="pi pi-calendar"></i> Historial de Asistencias (Últimas 10)
+        </h3>
       </template>
       <template #content>
         <DataTable
@@ -212,7 +311,7 @@
               {{ formatearFechaHora(data.fecha_ingreso) }}
             </template>
           </Column>
-          
+
           <Column field="membresia_valida" header="Estado Membresía">
             <template #body="{ data }">
               <Tag
@@ -221,16 +320,21 @@
               />
             </template>
           </Column>
-          
+
           <Column field="observaciones" header="Observaciones">
             <template #body="{ data }">
-              {{ data.observaciones || '-' }}
+              {{ data.observaciones || "-" }}
             </template>
           </Column>
         </DataTable>
-        
-        <div v-if="!cliente.asistencias || cliente.asistencias.length === 0" class="no-data">
-          <p><i class="pi pi-info-circle"></i> No hay registros de asistencia</p>
+
+        <div
+          v-if="!cliente.asistencias || cliente.asistencias.length === 0"
+          class="no-data"
+        >
+          <p>
+            <i class="pi pi-info-circle"></i> No hay registros de asistencia
+          </p>
         </div>
       </template>
     </Card>
@@ -251,11 +355,11 @@
             <strong>Duración:</strong> {{ membresiaActiva?.duracion_dias }} días
           </div>
           <div class="info-item">
-            <strong>Nueva fecha de vencimiento:</strong> 
+            <strong>Nueva fecha de vencimiento:</strong>
             {{ calcularNuevaFechaVencimiento() }}
           </div>
         </div>
-        
+
         <div class="form-group">
           <label>Precio a pagar:</label>
           <InputText
@@ -273,7 +377,7 @@
             v-model="formularioRenovacion.estado_pago"
             :options="[
               { label: 'Pagado', value: 'pagado' },
-              { label: 'Pendiente', value: 'pendiente' }
+              { label: 'Pendiente', value: 'pendiente' },
             ]"
             optionLabel="label"
             optionValue="value"
@@ -367,7 +471,7 @@
             @change="actualizarPrecioCambio"
           />
         </div>
-        
+
         <div class="form-group">
           <label>Precio a pagar:</label>
           <InputText
@@ -385,7 +489,7 @@
             v-model="formularioCambio.estado_pago"
             :options="[
               { label: 'Pagado', value: 'pagado' },
-              { label: 'Pendiente', value: 'pendiente' }
+              { label: 'Pendiente', value: 'pendiente' },
             ]"
             optionLabel="label"
             optionValue="value"
@@ -403,7 +507,10 @@
           label="Cambiar"
           @click="cambiarMembresia"
           :loading="cambiandoMembresia"
-          :disabled="!formularioCambio.nueva_membresia_id || !formularioCambio.precio_pagado"
+          :disabled="
+            !formularioCambio.nueva_membresia_id ||
+            !formularioCambio.precio_pagado
+          "
         />
       </template>
     </Dialog>
@@ -434,15 +541,15 @@
             </template>
           </Column>
           <Column field="precio_pagado" header="Precio Pagado">
-            <template #body="{ data }">
-              ${{ data.precio_pagado }}
-            </template>
+            <template #body="{ data }"> ${{ data.precio_pagado }} </template>
           </Column>
           <Column field="estado_pago" header="Estado">
             <template #body="{ data }">
               <Tag
                 :value="data.estado_pago"
-                :severity="data.estado_pago === 'pagado' ? 'success' : 'warning'"
+                :severity="
+                  data.estado_pago === 'pagado' ? 'success' : 'warning'
+                "
               />
             </template>
           </Column>
@@ -470,11 +577,12 @@
           <div class="info-section">
             <h4><i class="pi pi-info-circle"></i> Información</h4>
             <p>
-              Este enlace permite al cliente ver su información personal, membresía actual, 
-              historial de asistencias y estadísticas de forma segura y privada.
+              Este enlace permite al cliente ver su información personal,
+              membresía actual, historial de asistencias y estadísticas de forma
+              segura y privada.
             </p>
           </div>
-          
+
           <div class="enlace-section">
             <h4><i class="pi pi-link"></i> Enlace Público</h4>
             <div class="url-container">
@@ -493,7 +601,7 @@
               />
             </div>
           </div>
-          
+
           <div class="acciones-section">
             <h4><i class="pi pi-cog"></i> Acciones</h4>
             <div class="acciones-grid">
@@ -533,20 +641,20 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted, computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
-import { usePermissions } from '../composables/usePermissions';
-import api from '../services/api';
+import { ref, reactive, onMounted, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useToast } from "primevue/usetoast";
+import { usePermissions } from "../composables/usePermissions";
+import api from "../services/api";
 
 export default {
-  name: 'ClienteDetalle',
+  name: "ClienteDetalle",
   setup() {
     const route = useRoute();
     const router = useRouter();
     const toast = useToast();
     const { permissions } = usePermissions();
-    
+
     // Estado reactivo
     const cliente = ref(null);
     const membresiaActiva = ref(null);
@@ -564,23 +672,23 @@ export default {
     const mostrarDialogoEnlacePublico = ref(false);
     const historialMembresias = ref([]);
     const generandoEnlace = ref(false);
-    const enlacePublico = ref('');
-    
+    const enlacePublico = ref("");
+
     const formularioAsignacion = reactive({
       membresia_id: null,
       fecha_inicio: new Date(),
-      precio_pagado: 0
+      precio_pagado: 0,
     });
 
     const formularioRenovacion = reactive({
       precio_pagado: 0,
-      estado_pago: 'pagado'
+      estado_pago: "pagado",
     });
 
     const formularioCambio = reactive({
       nueva_membresia_id: null,
       precio_pagado: 0,
-      estado_pago: 'pagado'
+      estado_pago: "pagado",
     });
 
     // Métodos
@@ -592,14 +700,14 @@ export default {
         membresiaActiva.value = response.membresia_activa;
         estadisticas.value = response.estadisticas;
       } catch (error) {
-        console.error('Error loading client:', error);
+        console.error("Error loading client:", error);
         toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Error al cargar información del cliente',
-          life: 3000
+          severity: "error",
+          summary: "Error",
+          detail: "Error al cargar información del cliente",
+          life: 3000,
         });
-        router.push('/clientes');
+        router.push("/clientes");
       } finally {
         loading.value = false;
       }
@@ -610,7 +718,7 @@ export default {
         const response = await api.getMembresias();
         membresiasDisponibles.value = response.data || response;
       } catch (error) {
-        console.error('Error loading memberships:', error);
+        console.error("Error loading memberships:", error);
       }
     };
 
@@ -619,24 +727,25 @@ export default {
         registrandoIngreso.value = true;
         await api.registrarIngreso({
           cliente_id: cliente.value.id,
-          permitir_sin_membresia: true
+          permitir_sin_membresia: true,
         });
-        
+
         toast.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: 'Ingreso registrado exitosamente',
-          life: 3000
+          severity: "success",
+          summary: "Éxito",
+          detail: "Ingreso registrado exitosamente",
+          life: 3000,
         });
-        
+
         cargarCliente(); // Recargar datos
       } catch (error) {
-        const message = error.response?.data?.message || 'Error al registrar ingreso';
+        const message =
+          error.response?.data?.message || "Error al registrar ingreso";
         toast.add({
-          severity: 'error',
-          summary: 'Error',
+          severity: "error",
+          summary: "Error",
           detail: message,
-          life: 5000
+          life: 5000,
         });
       } finally {
         registrandoIngreso.value = false;
@@ -648,25 +757,25 @@ export default {
         renovandoMembresia.value = true;
         await api.renovarMembresia(membresiaActiva.value.id, {
           precio_pagado: formularioRenovacion.precio_pagado,
-          estado_pago: formularioRenovacion.estado_pago
+          estado_pago: formularioRenovacion.estado_pago,
         });
-        
+
         toast.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: 'Membresía renovada exitosamente',
-          life: 3000
+          severity: "success",
+          summary: "Éxito",
+          detail: "Membresía renovada exitosamente",
+          life: 3000,
         });
-        
+
         cerrarDialogoRenovacion();
         cargarCliente();
       } catch (error) {
-        console.error('Error renovando membresía:', error);
+        console.error("Error renovando membresía:", error);
         toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: error.response?.data?.message || 'Error al renovar membresía',
-          life: 3000
+          severity: "error",
+          summary: "Error",
+          detail: error.response?.data?.message || "Error al renovar membresía",
+          life: 3000,
         });
       } finally {
         renovandoMembresia.value = false;
@@ -679,25 +788,27 @@ export default {
         await api.asignarMembresia({
           cliente_id: cliente.value.id,
           membresia_id: formularioAsignacion.membresia_id,
-          fecha_inicio: formularioAsignacion.fecha_inicio.toISOString().split('T')[0],
-          precio_pagado: formularioAsignacion.precio_pagado
+          fecha_inicio: formularioAsignacion.fecha_inicio
+            .toISOString()
+            .split("T")[0],
+          precio_pagado: formularioAsignacion.precio_pagado,
         });
-        
+
         toast.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: 'Membresía asignada exitosamente',
-          life: 3000
+          severity: "success",
+          summary: "Éxito",
+          detail: "Membresía asignada exitosamente",
+          life: 3000,
         });
-        
+
         cerrarDialogoAsignacion();
         cargarCliente();
       } catch (error) {
         toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Error al asignar membresía',
-          life: 3000
+          severity: "error",
+          summary: "Error",
+          detail: "Error al asignar membresía",
+          life: 3000,
         });
       } finally {
         asignandoMembresia.value = false;
@@ -710,25 +821,25 @@ export default {
         await api.cambiarMembresia(membresiaActiva.value.pivot.id, {
           nueva_membresia_id: formularioCambio.nueva_membresia_id,
           precio_pagado: formularioCambio.precio_pagado,
-          estado_pago: formularioCambio.estado_pago
+          estado_pago: formularioCambio.estado_pago,
         });
-        
+
         toast.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: 'Membresía cambiada exitosamente',
-          life: 3000
+          severity: "success",
+          summary: "Éxito",
+          detail: "Membresía cambiada exitosamente",
+          life: 3000,
         });
-        
+
         cerrarDialogoCambio();
         cargarCliente();
       } catch (error) {
-        console.error('Error al cambiar membresía:', error);
+        console.error("Error al cambiar membresía:", error);
         toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Error al cambiar membresía',
-          life: 3000
+          severity: "error",
+          summary: "Error",
+          detail: "Error al cambiar membresía",
+          life: 3000,
         });
       } finally {
         cambiandoMembresia.value = false;
@@ -746,20 +857,20 @@ export default {
         const response = await api.generarEnlacePublico(cliente.value.id);
         enlacePublico.value = response.url;
         mostrarDialogoEnlacePublico.value = true;
-        
+
         toast.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: 'Enlace público generado correctamente',
-          life: 3000
+          severity: "success",
+          summary: "Éxito",
+          detail: "Enlace público generado correctamente",
+          life: 3000,
         });
       } catch (error) {
-        console.error('Error al generar enlace público:', error);
+        console.error("Error al generar enlace público:", error);
         toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'No se pudo generar el enlace público',
-          life: 3000
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo generar el enlace público",
+          life: 3000,
         });
       } finally {
         generandoEnlace.value = false;
@@ -770,43 +881,49 @@ export default {
       try {
         await navigator.clipboard.writeText(enlacePublico.value);
         toast.add({
-          severity: 'success',
-          summary: 'Copiado',
-          detail: 'Enlace copiado al portapapeles',
-          life: 2000
+          severity: "success",
+          summary: "Copiado",
+          detail: "Enlace copiado al portapapeles",
+          life: 2000,
         });
       } catch (error) {
         // Fallback para navegadores que no soportan clipboard API
-        const textArea = document.createElement('textarea');
+        const textArea = document.createElement("textarea");
         textArea.value = enlacePublico.value;
         document.body.appendChild(textArea);
         textArea.select();
-        document.execCommand('copy');
+        document.execCommand("copy");
         document.body.removeChild(textArea);
-        
+
         toast.add({
-          severity: 'success',
-          summary: 'Copiado',
-          detail: 'Enlace copiado al portapapeles',
-          life: 2000
+          severity: "success",
+          summary: "Copiado",
+          detail: "Enlace copiado al portapapeles",
+          life: 2000,
         });
       }
     };
 
     const enviarPorEmail = () => {
-      const asunto = encodeURIComponent('Tu información personal del gimnasio');
-      const cuerpo = encodeURIComponent(`Hola ${cliente.value.nombre},\n\nPuedes consultar tu información personal, membresía y asistencias en el siguiente enlace:\n\n${enlacePublico.value}\n\nSaludos,\nEquipo del Gimnasio`);
-      window.open(`mailto:${cliente.value.correo}?subject=${asunto}&body=${cuerpo}`);
+      const asunto = encodeURIComponent("Tu información personal del gimnasio");
+      const cuerpo = encodeURIComponent(
+        `Hola ${cliente.value.nombre},\n\nPuedes consultar tu información personal, membresía y asistencias en el siguiente enlace:\n\n${enlacePublico.value}\n\nSaludos,\nEquipo del Gimnasio`
+      );
+      window.open(
+        `mailto:${cliente.value.correo}?subject=${asunto}&body=${cuerpo}`
+      );
     };
 
     const compartirWhatsApp = () => {
-      const mensaje = encodeURIComponent(`Hola ${cliente.value.nombre}, puedes consultar tu información del gimnasio en: ${enlacePublico.value}`);
-      const telefono = cliente.value.telefono.replace(/\D/g, ''); // Remover caracteres no numéricos
-      window.open(`https://wa.me/${telefono}?text=${mensaje}`, '_blank');
+      const mensaje = encodeURIComponent(
+        `Hola ${cliente.value.nombre}, puedes consultar tu información del gimnasio en: ${enlacePublico.value}`
+      );
+      const telefono = cliente.value.telefono.replace(/\D/g, ""); // Remover caracteres no numéricos
+      window.open(`https://wa.me/${telefono}?text=${mensaje}`, "_blank");
     };
 
     const abrirEnlace = () => {
-      window.open(enlacePublico.value, '_blank');
+      window.open(enlacePublico.value, "_blank");
     };
 
     const verHistorialMembresias = async () => {
@@ -816,12 +933,12 @@ export default {
         historialMembresias.value = response;
         mostrarHistorialMembresias.value = true;
       } catch (error) {
-        console.error('Error al cargar historial de membresías:', error);
+        console.error("Error al cargar historial de membresías:", error);
         toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'No se pudo cargar el historial de membresías',
-          life: 3000
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo cargar el historial de membresías",
+          life: 3000,
         });
       } finally {
         loading.value = false;
@@ -831,7 +948,7 @@ export default {
     const actualizarPrecioCambio = () => {
       if (formularioCambio.nueva_membresia_id) {
         const membresiaSeleccionada = membresiasDisponibles.value.find(
-          m => m.id === formularioCambio.nueva_membresia_id
+          (m) => m.id === formularioCambio.nueva_membresia_id
         );
         if (membresiaSeleccionada) {
           formularioCambio.precio_pagado = membresiaSeleccionada.precio;
@@ -849,44 +966,44 @@ export default {
     const cerrarDialogoRenovacion = () => {
       mostrarDialogoRenovacion.value = false;
       formularioRenovacion.precio_pagado = 0;
-      formularioRenovacion.estado_pago = 'pagado';
+      formularioRenovacion.estado_pago = "pagado";
     };
 
     const cerrarDialogoCambio = () => {
       mostrarDialogoCambio.value = false;
       formularioCambio.nueva_membresia_id = null;
       formularioCambio.precio_pagado = 0;
-      formularioCambio.estado_pago = 'pagado';
+      formularioCambio.estado_pago = "pagado";
     };
 
     const abrirDialogoRenovacion = () => {
       // Inicializar formulario con precio de la membresía actual
       formularioRenovacion.precio_pagado = membresiaActiva.value?.precio || 0;
-      formularioRenovacion.estado_pago = 'pagado';
+      formularioRenovacion.estado_pago = "pagado";
       mostrarDialogoRenovacion.value = true;
     };
 
     const abrirDialogoCambio = () => {
       formularioCambio.nueva_membresia_id = null;
       formularioCambio.precio_pagado = 0;
-      formularioCambio.estado_pago = 'pagado';
+      formularioCambio.estado_pago = "pagado";
       mostrarDialogoCambio.value = true;
     };
 
     const calcularNuevaFechaVencimiento = () => {
-      if (!membresiaActiva.value) return '';
+      if (!membresiaActiva.value) return "";
       const fecha = new Date(membresiaActiva.value.fecha_vencimiento);
       fecha.setDate(fecha.getDate() + membresiaActiva.value.duracion_dias);
-      return fecha.toLocaleDateString('es-ES');
+      return fecha.toLocaleDateString("es-ES");
     };
 
     // Utilidades
     const formatearFecha = (fecha) => {
-      return new Date(fecha).toLocaleDateString('es-ES');
+      return new Date(fecha).toLocaleDateString("es-ES");
     };
 
     const formatearFechaHora = (fecha) => {
-      return new Date(fecha).toLocaleString('es-ES');
+      return new Date(fecha).toLocaleString("es-ES");
     };
 
     // Lifecycle
@@ -917,7 +1034,7 @@ export default {
       formularioAsignacion,
       formularioRenovacion,
       formularioCambio,
-      
+
       // Métodos
       registrarIngreso,
       renovarMembresia,
@@ -939,10 +1056,10 @@ export default {
       calcularNuevaFechaVencimiento,
       formatearFecha,
       formatearFechaHora,
-      permissions
+      permissions,
     };
-  }
-}
+  },
+};
 </script>
 
 <style scoped>
@@ -983,6 +1100,10 @@ export default {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.mb {
   margin-bottom: 2rem;
 }
 
@@ -1110,7 +1231,8 @@ export default {
   color: #374151;
 }
 
-.renovacion-info, .info-item {
+.renovacion-info,
+.info-item {
   margin-bottom: 1rem;
 }
 
@@ -1144,17 +1266,17 @@ export default {
   .cliente-info-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .page-header {
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
   }
-  
+
   .header-actions {
     justify-content: center;
   }
-  
+
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1202,7 +1324,7 @@ export default {
   padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 6px;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 0.875rem;
   background: white;
   cursor: pointer;
@@ -1224,11 +1346,11 @@ export default {
   .acciones-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .url-container {
     flex-direction: column;
   }
-  
+
   .url-input {
     width: 100%;
   }
