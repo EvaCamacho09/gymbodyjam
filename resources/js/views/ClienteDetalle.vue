@@ -190,6 +190,13 @@
                 class="p-button-info p-button-outlined"
               />
               <Button
+                v-if="permissions.canChangeMembresias"
+                label="Editar Membresía"
+                icon="pi pi-pencil"
+                @click="abrirDialogoEdicionMembresia"
+                class="p-button-secondary p-button-outlined"
+              />
+              <Button
                 label="Ver Historial"
                 icon="pi pi-history"
                 @click="verHistorialMembresias"
@@ -530,7 +537,7 @@
           <Column field="membresia.nombre" header="Membresía" sortable />
           <Column field="fecha_inicio" header="Fecha Inicio" sortable>
             <template #body="{ data }">
-              {{ data.fecha_inicio}}
+              {{ data.fecha_inicio }}
             </template>
           </Column>
           <Column field="fecha_vencimiento" header="Fecha Vencimiento" sortable>
@@ -558,6 +565,55 @@
           label="Cerrar"
           class="p-button-text"
           @click="mostrarHistorialMembresias = false"
+        />
+      </template>
+    </Dialog>
+
+    <!-- Diálogo para editar membresía -->
+    <Dialog
+      v-model:visible="mostrarDialogoEdicionMembresia"
+      header="Editar Membresía"
+      :modal="true"
+      :style="{ width: '500px' }"
+    >
+      <div class="dialog-content">
+        <div class="info-item">
+          <strong>Membresía:</strong>
+          <span>{{ membresiaActiva?.nombre }}</span>
+        </div>
+
+        <div class="form-group">
+          <label>Fecha de inicio:</label>
+          <Calendar
+            v-model="formularioEdicionMembresia.fecha_inicio"
+            dateFormat="dd/mm/yy"
+            showIcon
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Precio pagado:</label>
+          <InputNumber
+            v-model="formularioEdicionMembresia.precio_pagado"
+            mode="currency"
+            currency="USD"
+            locale="es-CO"
+          />
+        </div>
+
+   
+      </div>
+      <template #footer>
+        <Button
+          label="Cancelar"
+          class="p-button-text"
+          @click="cerrarDialogoEdicionMembresia"
+        />
+        <Button
+          label="Guardar cambios"
+          icon="pi pi-save"
+          @click="guardarEdicionMembresia"
+          :loading="editandoMembresia"
         />
       </template>
     </Dialog>
@@ -663,9 +719,11 @@ export default {
     const renovandoMembresia = ref(false);
     const asignandoMembresia = ref(false);
     const cambiandoMembresia = ref(false);
+    const editandoMembresia = ref(false);
     const mostrarDialogoRenovacion = ref(false);
     const mostrarDialogoAsignacion = ref(false);
     const mostrarDialogoCambio = ref(false);
+    const mostrarDialogoEdicionMembresia = ref(false);
     const mostrarHistorialMembresias = ref(false);
     const mostrarDialogoEnlacePublico = ref(false);
     const historialMembresias = ref([]);
@@ -685,6 +743,15 @@ export default {
 
     const formularioCambio = reactive({
       nueva_membresia_id: null,
+      precio_pagado: 0,
+      estado_pago: "pagado",
+    });
+
+    const formularioEdicionMembresia = reactive({
+      membresia_id: null,
+      cliente_membresia_id: null,
+      fecha_inicio: null,
+      fecha_vencimiento: null,
       precio_pagado: 0,
       estado_pago: "pagado",
     });
@@ -815,7 +882,6 @@ export default {
 
     const cambiarMembresia = async () => {
       try {
-       
         cambiandoMembresia.value = true;
         await api.cambiarMembresia(membresiaActiva.value.cliente_membresia_id, {
           nueva_membresia_id: formularioCambio.nueva_membresia_id,
@@ -996,6 +1062,70 @@ export default {
       return fecha.toLocaleDateString("es-ES");
     };
 
+    const abrirDialogoEdicionMembresia = () => {
+      if (!membresiaActiva.value) return;
+
+      formularioEdicionMembresia.cliente_membresia_id =
+        membresiaActiva.value.cliente_membresia_id;
+      formularioEdicionMembresia.membresia_id =
+        membresiaActiva.value.membresia_id;
+      formularioEdicionMembresia.fecha_inicio = new Date(
+        membresiaActiva.value.fecha_inicio
+      );
+      formularioEdicionMembresia.fecha_vencimiento = new Date(
+        membresiaActiva.value.fecha_vencimiento
+      );
+      formularioEdicionMembresia.precio_pagado =
+        membresiaActiva.value.precio_pagado || 0;
+      formularioEdicionMembresia.estado_pago =
+        membresiaActiva.value.estado_pago || "pagado";
+
+      mostrarDialogoEdicionMembresia.value = true;
+    };
+
+    const cerrarDialogoEdicionMembresia = () => {
+      mostrarDialogoEdicionMembresia.value = false;
+    };
+
+    const guardarEdicionMembresia = async () => {
+      try {
+        editandoMembresia.value = true;
+
+        await api.editarMembresiaCliente(
+          formularioEdicionMembresia.cliente_membresia_id,
+          {
+            fecha_inicio: formularioEdicionMembresia.fecha_inicio
+              .toISOString()
+              .split("T")[0],
+
+            precio_pagado: formularioEdicionMembresia.precio_pagado,
+          
+          }
+        );
+
+        toast.add({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Membresía actualizada exitosamente",
+          life: 3000,
+        });
+
+        cerrarDialogoEdicionMembresia();
+        cargarCliente(); // Recargar datos del cliente para actualizar la vista
+      } catch (error) {
+        console.error("Error al editar membresía:", error);
+        toast.add({
+          severity: "error",
+          summary: "Error",
+          detail:
+            error.response?.data?.message || "Error al editar la membresía",
+          life: 3000,
+        });
+      } finally {
+        editandoMembresia.value = false;
+      }
+    };
+
     // Utilidades
     const formatearFecha = (fecha) => {
       return new Intl.DateTimeFormat("es-CO", {
@@ -1036,9 +1166,11 @@ export default {
       renovandoMembresia,
       asignandoMembresia,
       cambiandoMembresia,
+      editandoMembresia,
       mostrarDialogoRenovacion,
       mostrarDialogoAsignacion,
       mostrarDialogoCambio,
+      mostrarDialogoEdicionMembresia,
       mostrarHistorialMembresias,
       mostrarDialogoEnlacePublico,
       generandoEnlace,
@@ -1046,6 +1178,7 @@ export default {
       formularioAsignacion,
       formularioRenovacion,
       formularioCambio,
+      formularioEdicionMembresia,
 
       // Métodos
       registrarIngreso,
@@ -1062,8 +1195,11 @@ export default {
       cerrarDialogoAsignacion,
       cerrarDialogoRenovacion,
       cerrarDialogoCambio,
+      cerrarDialogoEdicionMembresia,
       abrirDialogoRenovacion,
       abrirDialogoCambio,
+      abrirDialogoEdicionMembresia,
+      guardarEdicionMembresia,
       actualizarPrecioCambio,
       calcularNuevaFechaVencimiento,
       formatearFecha,

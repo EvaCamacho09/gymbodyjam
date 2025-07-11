@@ -153,6 +153,11 @@ export default {
     return response.data;
   },
 
+  async editarMembresiaCliente(clienteMembresiaId, datos) {
+       const response = await api.put(`/membresias-cliente/${clienteMembresiaId}`, datos);
+       return response.data;
+  },
+
   async getHistorialMembresias(clienteId) {
     const response = await api.get(`/historial-membresias/${clienteId}`);
     return response.data;

@@ -129,7 +129,7 @@ class MembresiaController extends Controller
 
         $clienteMembresia = ClienteMembresia::findOrFail($clienteMembresiaId);
         $membresia = $clienteMembresia->membresia;
-        
+
         $nuevaFechaInicio = Carbon::now();
         $nuevaFechaVencimiento = $nuevaFechaInicio->copy()->addDays($membresia->duracion_dias);
 
@@ -163,7 +163,7 @@ class MembresiaController extends Controller
 
         $clienteMembresiaAnterior = ClienteMembresia::findOrFail($clienteMembresiaId);
         $nuevaMembresia = Membresia::findOrFail($request->nueva_membresia_id);
-        
+
         $nuevaFechaInicio = Carbon::now();
         $nuevaFechaVencimiento = $nuevaFechaInicio->copy()->addDays($nuevaMembresia->duracion_dias);
 
@@ -185,6 +185,43 @@ class MembresiaController extends Controller
             'cliente_membresia' => $nuevaClienteMembresia,
             'message' => 'Membresía cambiada exitosamente'
         ], 201);
+    }
+
+    /**
+     * Actualiza los datos de una membresía existente de un cliente
+     *
+     * @param int $clienteMembresiaId
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function actualizarMembresiaCliente($clienteMembresiaId, Request $request)
+    {
+        $request->validate([
+            'fecha_inicio' => 'required|date',
+            'precio_pagado' => 'required|numeric|min:0',
+        ]);
+
+        $clienteMembresia = ClienteMembresia::findOrFail($clienteMembresiaId);
+        $membresia = Membresia::findOrFail($clienteMembresia->membresia_id);
+       
+        $fechaInicio = Carbon::parse($request->fecha_inicio);
+        $fechaVencimiento = $fechaInicio->copy()->addDays($membresia->duracion_dias);
+
+     
+
+        // Actualizar los campos
+        $clienteMembresia->membresia_id = $membresia->id;
+        $clienteMembresia->fecha_inicio = $request->fecha_inicio;
+        $clienteMembresia->fecha_vencimiento = $fechaVencimiento;
+        $clienteMembresia->precio_pagado = $request->precio_pagado;
+
+        $clienteMembresia->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Membresía actualizada correctamente',
+            'cliente_membresia' => $clienteMembresia
+        ]);
     }
 
     /**
