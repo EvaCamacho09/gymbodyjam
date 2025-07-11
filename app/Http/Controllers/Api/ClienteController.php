@@ -131,6 +131,7 @@ class ClienteController extends Controller
             'cliente' => $cliente,
             'membresia_activa' => $membresiaActiva ? [
                 'id' => $membresiaActiva->id,
+                'cliente_membresia_id' => $membresiaActiva->pivot->id,
                 'nombre' => $membresiaActiva->nombre,
                 'precio' => $membresiaActiva->precio,
                 'duracion_dias' => $membresiaActiva->duracion_dias,

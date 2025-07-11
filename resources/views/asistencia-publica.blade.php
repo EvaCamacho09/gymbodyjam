@@ -777,6 +777,7 @@
                 let estadoClass = '';
 
                 if (membresia) {
+                  
                     if (membresia.vencida) {
                         estadoText = 'Membresía vencida';
                         estadoClass = 'estado-vencida';
@@ -917,6 +918,7 @@
 
                 const data = await response.json();
                 if (data.success) {
+                   
                     modalText.textContent =
                         `¡Hola ${data.cliente.nombre}! Tu asistencia ha sido registrada exitosamente.`;
 

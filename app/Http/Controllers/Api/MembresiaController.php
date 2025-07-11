@@ -176,6 +176,9 @@ class MembresiaController extends Controller
             'estado_pago' => $request->estado_pago ?? 'pagado',
         ]);
 
+
+        $clienteMembresiaAnterior->fecha_vencimiento =  Carbon::now(); // Marcar la membresía anterior como vencida
+        $clienteMembresiaAnterior->save(); // Guardar el cambio de estado
         $nuevaClienteMembresia->load(['cliente', 'membresia']);
 
         return response()->json([

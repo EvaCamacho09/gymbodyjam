@@ -45,7 +45,7 @@ class AsistenciaPublicaController extends Controller
                 $cliente->membresia_actual = [
                     'nombre' => $membresiaActual->nombre,
                     'fecha_vencimiento' => $fechaVencimiento->format('Y-m-d'),
-                    'dias_restantes' => $hoy->diffInDays($fechaVencimiento, false),
+                    'dias_restantes' => $cliente->diasRestantes(),
                     'vencida' => $fechaVencimiento->isPast(),
                     'estado' => $fechaVencimiento->isPast() ? 'vencida' : ($hoy->diffInDays($fechaVencimiento) <= 5 ? 'por_vencer' : 'activa')
                 ];
@@ -108,7 +108,7 @@ class AsistenciaPublicaController extends Controller
 
         // Calcular días restantes
         $fechaVencimiento = Carbon::parse($membresiaActual->pivot->fecha_vencimiento);
-        $diasRestantes = Carbon::now()->diffInDays($fechaVencimiento, false);
+        $diasRestantes = $cliente->diasRestantes();
         $vencida = $fechaVencimiento->isPast();
 
         return response()->json([

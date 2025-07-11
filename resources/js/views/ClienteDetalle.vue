@@ -80,7 +80,7 @@
         </template>
       </Card>
     </div>
-    <br>
+    <br />
 
     <!-- Información del cliente -->
     <div class="cliente-info-grid">
@@ -143,13 +143,11 @@
               </div>
               <div class="detalle-item">
                 <strong>Fecha inicio:</strong>
-                <span>{{ formatearFecha(membresiaActiva.fecha_inicio) }}</span>
+                <span>{{ membresiaActiva.fecha_inicio }}</span>
               </div>
               <div class="detalle-item">
                 <strong>Fecha vencimiento:</strong>
-                <span>{{
-                  formatearFecha(membresiaActiva.fecha_vencimiento)
-                }}</span>
+                <span>{{ membresiaActiva.fecha_vencimiento }}</span>
               </div>
               <div class="detalle-item">
                 <strong>Días restantes:</strong>
@@ -290,7 +288,7 @@
         </div>
       </template>
     </Card>
-    <br>
+    <br />
 
     <!-- Historial de asistencias -->
     <Card class="historial-asistencias">
@@ -308,7 +306,7 @@
         >
           <Column field="fecha_ingreso" header="Fecha y Hora" sortable>
             <template #body="{ data }">
-              {{ formatearFechaHora(data.fecha_ingreso) }}
+              {{ data.fecha_ingreso }}
             </template>
           </Column>
 
@@ -532,12 +530,12 @@
           <Column field="membresia.nombre" header="Membresía" sortable />
           <Column field="fecha_inicio" header="Fecha Inicio" sortable>
             <template #body="{ data }">
-              {{ formatearFecha(data.fecha_inicio) }}
+              {{ data.fecha_inicio}}
             </template>
           </Column>
           <Column field="fecha_vencimiento" header="Fecha Vencimiento" sortable>
             <template #body="{ data }">
-              {{ formatearFecha(data.fecha_vencimiento) }}
+              {{ data.fecha_vencimiento }}
             </template>
           </Column>
           <Column field="precio_pagado" header="Precio Pagado">
@@ -817,8 +815,9 @@ export default {
 
     const cambiarMembresia = async () => {
       try {
+       
         cambiandoMembresia.value = true;
-        await api.cambiarMembresia(membresiaActiva.value.pivot.id, {
+        await api.cambiarMembresia(membresiaActiva.value.cliente_membresia_id, {
           nueva_membresia_id: formularioCambio.nueva_membresia_id,
           precio_pagado: formularioCambio.precio_pagado,
           estado_pago: formularioCambio.estado_pago,
@@ -999,11 +998,24 @@ export default {
 
     // Utilidades
     const formatearFecha = (fecha) => {
-      return new Date(fecha).toLocaleDateString("es-ES");
+      return new Intl.DateTimeFormat("es-CO", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        timeZone: "America/Bogota",
+      }).format(new Date(fecha));
     };
 
     const formatearFechaHora = (fecha) => {
-      return new Date(fecha).toLocaleString("es-ES");
+      return new Intl.DateTimeFormat("es-CO", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        timeZone: "America/Bogota",
+      });
     };
 
     // Lifecycle

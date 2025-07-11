@@ -50,7 +50,7 @@ class Cliente extends Model
     public function membresiaActiva()
     {
         return $this->belongsToMany(Membresia::class, 'cliente_membresia')
-            ->withPivot('fecha_inicio', 'fecha_vencimiento', 'precio_pagado', 'estado_pago')
+            ->withPivot('fecha_inicio', 'fecha_vencimiento', 'precio_pagado', 'estado_pago','id')
             ->wherePivot('fecha_vencimiento', '>=', now())
             ->latest('pivot_fecha_inicio')
             ->first();
@@ -72,10 +72,16 @@ class Cliente extends Model
     {
         $membresiaActiva = $this->membresiaActiva();
         if (!$membresiaActiva) {
-            return null; // Sin membresía
+            return null; // Sin membresía activa
         }
 
-        return now()->diffInDays($membresiaActiva->pivot->fecha_vencimiento, false);
+        $fechaVencimiento = $membresiaActiva->pivot->fecha_vencimiento;
+        $hoy = now();
+
+        // Si la fecha de vencimiento ya pasó, retornamos 0 o negativo
+        $diff = $hoy->diffInDays($fechaVencimiento, false);
+
+        return $diff >= 0 ? $diff + 1 : $diff;
     }
 
     /**

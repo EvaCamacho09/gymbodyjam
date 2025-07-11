@@ -69,9 +69,21 @@ class ClienteMembresia extends Model
     /**
      * Obtener días restantes
      */
-    public function diasRestantes(): int
+
+    public function diasRestantes(): ?int
     {
-        return max(0, now()->diffInDays($this->fecha_vencimiento, false));
+        $membresiaActiva = $this->estaActiva;
+        if (!$membresiaActiva) {
+            return null; // Sin membresía activa
+        }
+
+        $fechaVencimiento = $this->fecha_vencimiento;
+        $hoy = now();
+
+        // Si la fecha de vencimiento ya pasó, retornamos 0 o negativo
+        $diff = $hoy->diffInDays($fechaVencimiento, false);
+
+        return $diff >= 0 ? $diff + 1 : $diff;
     }
 
     /**
