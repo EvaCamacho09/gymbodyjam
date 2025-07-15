@@ -667,8 +667,8 @@
             backgroundImages[0].style.backgroundImage = `url(${gymImages[0]})`;
             imageIndicator.textContent = `Imagen 1/${gymImages.length}`;
 
-            // Cambiar imagen cada 30 minutos (1800000 ms)
-            setInterval(changeImage, 1800000);
+            // Cambiar imagen cada 2 minutos (120000 ms)
+            setInterval(changeImage, 120000);
 
             console.log('Slider inicializado. Cambio cada 30 minutos.');
         }

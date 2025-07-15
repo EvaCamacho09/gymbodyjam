@@ -77,20 +77,6 @@
               <InputNumber v-model="formulario.altura" :min="0" />
             </div>
 
-            <div class="form-group">
-              <label>% Grasa Corporal</label>
-              <InputNumber
-                v-model="formulario.porcentaje_grasa"
-                :min="0"
-                :max="100"
-                :step="0.1"
-              />
-            </div>
-
-            <div class="form-group">
-              <label>Masa Muscular</label>
-              <InputNumber v-model="formulario.masa_muscular" :min="0" />
-            </div>
 
             <div class="form-group">
               <label>Cintura (cm)</label>
@@ -107,43 +93,20 @@
               <InputNumber v-model="formulario.pecho_torax" :min="0" />
             </div>
 
-            <div class="form-group">
-              <label>Bíceps Relajado (cm)</label>
-              <InputNumber v-model="formulario.biceps_relajado" :min="0" />
-            </div>
+
 
             <div class="form-group">
-              <label>Bíceps Contraído (cm)</label>
-              <InputNumber v-model="formulario.biceps_contraido" :min="0" />
-            </div>
-
-            <div class="form-group">
-              <label>Antebrazo (cm)</label>
+              <label>Brazo (cm)</label>
               <InputNumber v-model="formulario.antebrazo" :min="0" />
             </div>
 
             <div class="form-group">
-              <label>Muslo (cm)</label>
+              <label>Piernas (cm)</label>
               <InputNumber v-model="formulario.muslo" :min="0" />
             </div>
 
-            <div class="form-group">
-              <label>Pantorrilla (cm)</label>
-              <InputNumber v-model="formulario.pantorrilla" :min="0" />
-            </div>
 
-            <div class="form-group">
-              <label>Frecuencia Cardíaca en Reposo (lpm)</label>
-              <InputNumber v-model="formulario.frecuencia_cardiaca" :min="0" />
-            </div>
 
-            <div class="form-group">
-              <label>Presión Arterial</label>
-              <InputText
-                v-model="formulario.presion_arterial"
-                placeholder="Ej: 120/80"
-              />
-            </div>
 
             <div class="form-group">
               <label>Estado</label>

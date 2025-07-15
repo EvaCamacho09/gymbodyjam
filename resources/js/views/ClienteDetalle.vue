@@ -240,14 +240,8 @@
             <strong>IMC:</strong>
             <span>{{ cliente.imc }}</span>
           </div>
-          <div class="info-item" v-if="cliente.porcentaje_grasa">
-            <strong>% Grasa Corporal:</strong>
-            <span>{{ cliente.porcentaje_grasa }}%</span>
-          </div>
-          <div class="info-item" v-if="cliente.masa_muscular">
-            <strong>Masa Muscular:</strong>
-            <span>{{ cliente.masa_muscular }} kg</span>
-          </div>
+
+
           <div class="info-item" v-if="cliente.cintura">
             <strong>Cintura:</strong>
             <span>{{ cliente.cintura }} cm</span>
@@ -260,34 +254,17 @@
             <strong>Pecho / Tórax:</strong>
             <span>{{ cliente.pecho_torax }} cm</span>
           </div>
-          <div class="info-item" v-if="cliente.biceps_relajado">
-            <strong>Bíceps Relajado:</strong>
-            <span>{{ cliente.biceps_relajado }} cm</span>
-          </div>
-          <div class="info-item" v-if="cliente.biceps_contraido">
-            <strong>Bíceps Contraído:</strong>
-            <span>{{ cliente.biceps_contraido }} cm</span>
-          </div>
+
+
           <div class="info-item" v-if="cliente.antebrazo">
-            <strong>Antebrazo:</strong>
+            <strong>Brazo:</strong>
             <span>{{ cliente.antebrazo }} cm</span>
           </div>
           <div class="info-item" v-if="cliente.muslo">
-            <strong>Muslo:</strong>
+            <strong>Piernas:</strong>
             <span>{{ cliente.muslo }} cm</span>
           </div>
-          <div class="info-item" v-if="cliente.pantorrilla">
-            <strong>Pantorrilla:</strong>
-            <span>{{ cliente.pantorrilla }} cm</span>
-          </div>
-          <div class="info-item" v-if="cliente.frecuencia_cardiaca">
-            <strong>Frecuencia Cardíaca:</strong>
-            <span>{{ cliente.frecuencia_cardiaca }} lpm</span>
-          </div>
-          <div class="info-item" v-if="cliente.presion_arterial">
-            <strong>Presión Arterial:</strong>
-            <span>{{ cliente.presion_arterial }}</span>
-          </div>
+
           <div class="info-item" v-if="cliente.observaciones">
             <strong>Observaciones:</strong>
             <span>{{ cliente.observaciones }}</span>

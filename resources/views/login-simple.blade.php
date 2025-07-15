@@ -346,10 +346,10 @@
             backgroundImages[0].style.backgroundImage = `url(${gymImages[0]})`;
             // imageIndicator.textContent = `Imagen 1/${gymImages.length}`;
 
-            // Cambiar imagen cada 10 minutos (600000 ms)
-            setInterval(changeImage, 600000);
+            // Cambiar imagen cada 2 minutos (120000 ms)
+            setInterval(changeImage, 120000);
 
-            console.log('Slider inicializado. Cambio cada 10 minutos.');
+            console.log('Slider inicializado. Cambio cada 2 minutos.');
         }
 
         // Función para testing (cambio cada 10 segundos) - comentar en producción

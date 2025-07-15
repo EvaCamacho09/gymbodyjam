@@ -133,8 +133,8 @@ export default {
         img.src = src;
       });
 
-      // Cambiar imagen cada 30 minutos (1800000 ms)
-      imageInterval = setInterval(changeImage, 1800000);
+      // Cambiar imagen cada 2 minutos (120000 ms)
+      imageInterval = setInterval(changeImage, 120000);
 
       console.log("Slider inicializado. Cambio cada 30 minutos.");
     };

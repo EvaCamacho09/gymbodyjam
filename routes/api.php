@@ -55,7 +55,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/historial-membresias/{clienteId}', [MembresiaController::class, 'historialMembresias']);
     Route::post('/cambiar-membresia/{clienteMembresiaId}', [MembresiaController::class, 'cambiarMembresia']);
     Route::get('/historial-membresias/{clienteId}', [MembresiaController::class, 'historialMembresias']);
-    Route::put('/membresias-cliente/{clienteMembresiaId}', [MembresiaController::class, 'actualizarMembresiaCliente']);
     
     // Asistencias
     Route::apiResource('asistencias', AsistenciaController::class);
