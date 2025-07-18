@@ -132,7 +132,7 @@
 
           <Column field="fecha_ingreso" header="Fecha y Hora" sortable>
             <template #body="{ data }">
-              {{ formatearFechaHoraColombia(data.created_at) }}
+              {{ formatearFechaHoraSinZona(data.created_at) }}
             </template>
           </Column>
 
@@ -634,9 +634,11 @@ export default {
       });
     };
 
-    const formatearFechaSinZona = (fecha) => {
-      const [year, month, day] = fecha.split("T")[0].split("-");
-      return `${day}/${month}/${year}`;
+    const formatearFechaHoraSinZona = (fecha) => {
+      const [fechaParte, horaParte] = fecha.split("T");
+      const [year, month, day] = fechaParte.split("-");
+      const hora = horaParte.slice(0, 8); // hh:mm:ss
+      return `${day}/${month}/${year}, ${hora}`;
     };
 
     // Format: dd/mm/yyyy — Hora de Colombia
@@ -701,7 +703,7 @@ export default {
       limpiarFiltros,
       formatearFechaHora,
       formatearFechaHoraColombia,
-      formatearFechaSinZona,
+      formatearFechaHoraSinZona,
       formatearFecha,
       esHoy,
       debounceSearch,
