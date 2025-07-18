@@ -687,6 +687,7 @@ export default {
       aplicarFiltros,
       limpiarFiltros,
       formatearFechaHora,
+      formatearFechaSinZona,
       formatearFecha,
       esHoy,
       debounceSearch,
