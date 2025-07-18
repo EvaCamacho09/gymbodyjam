@@ -129,13 +129,13 @@
               </div>
             </template>
           </Column>
-          
+
           <Column field="fecha_ingreso" header="Fecha y Hora" sortable>
             <template #body="{ data }">
-              {{ data.fecha_ingreso }}
+              {{ formatearFechaHora(data.fecha_ingreso) }}
             </template>
           </Column>
-          
+
           <Column field="clienteMembresia" header="Membresía">
             <template #body="{ data }">
               <div v-if="data.cliente_membresia">
@@ -143,13 +143,14 @@
                   {{ data.cliente_membresia.membresia.nombre }}
                 </span>
                 <small class="membresia-venc">
-                  Vence: {{ formatearFecha(data.cliente_membresia.fecha_vencimiento) }}
+                  Vence:
+                  {{ formatearFecha(data.cliente_membresia.fecha_vencimiento) }}
                 </small>
               </div>
               <span v-else class="sin-membresia">Sin membresía</span>
             </template>
           </Column>
-          
+
           <Column field="membresia_valida" header="Estado">
             <template #body="{ data }">
               <Tag
@@ -158,13 +159,13 @@
               />
             </template>
           </Column>
-          
+
           <Column field="observaciones" header="Observaciones">
             <template #body="{ data }">
-              {{ data.observaciones || '-' }}
+              {{ data.observaciones || "-" }}
             </template>
           </Column>
-          
+
           <Column header="Acciones">
             <template #body="{ data }">
               <Button
@@ -196,7 +197,9 @@
             @input="buscarClientes"
             :class="{ 'p-invalid': errores.busqueda }"
           />
-          <small v-if="errores.busqueda" class="p-error">{{ errores.busqueda }}</small>
+          <small v-if="errores.busqueda" class="p-error">{{
+            errores.busqueda
+          }}</small>
         </div>
 
         <!-- Resultados de búsqueda -->
@@ -233,7 +236,9 @@
           <div class="cliente-card">
             <strong>{{ clienteSeleccionado.nombre }}</strong>
             <div class="cliente-detalles">
-              <span>Días restantes: {{ clienteSeleccionado.dias_restantes }}</span>
+              <span
+                >Días restantes: {{ clienteSeleccionado.dias_restantes }}</span
+              >
               <Tag
                 :value="clienteSeleccionado.es_moroso ? 'Moroso' : 'Activo'"
                 :severity="clienteSeleccionado.es_moroso ? 'danger' : 'success'"
@@ -262,20 +267,44 @@
             rows="3"
             placeholder="Observaciones adicionales (opcional)"
           />
-          
+
           <!-- Información de membresía -->
-          <div v-if="clienteSeleccionado && clienteSeleccionado.dias_restantes !== undefined" class="membresia-info">
-            <div v-if="clienteSeleccionado.dias_restantes > 0" class="membresia-activa">
-              <strong>✅ Membresía válida - {{ clienteSeleccionado.dias_restantes }} días restantes</strong>
+          <div
+            v-if="
+              clienteSeleccionado &&
+              clienteSeleccionado.dias_restantes !== undefined
+            "
+            class="membresia-info"
+          >
+            <div
+              v-if="clienteSeleccionado.dias_restantes > 0"
+              class="membresia-activa"
+            >
+              <strong
+                >✅ Membresía válida -
+                {{ clienteSeleccionado.dias_restantes }} días restantes</strong
+              >
             </div>
-            <div v-else-if="clienteSeleccionado.dias_restantes === 0" class="membresia-vence-hoy">
+            <div
+              v-else-if="clienteSeleccionado.dias_restantes === 0"
+              class="membresia-vence-hoy"
+            >
               <strong>⚠️ La membresía vence HOY</strong>
             </div>
             <div v-else class="membresia-vencida">
-              <strong>❌ Membresía vencida hace {{ Math.abs(clienteSeleccionado.dias_restantes) }} días</strong>
+              <strong
+                >❌ Membresía vencida hace
+                {{ Math.abs(clienteSeleccionado.dias_restantes) }} días</strong
+              >
             </div>
           </div>
-          <div v-else-if="clienteSeleccionado && clienteSeleccionado.dias_restantes === undefined" class="sin-membresia-info">
+          <div
+            v-else-if="
+              clienteSeleccionado &&
+              clienteSeleccionado.dias_restantes === undefined
+            "
+            class="sin-membresia-info"
+          >
             <strong>❌ Cliente sin membresía activa</strong>
           </div>
         </div>
@@ -302,19 +331,19 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted, computed } from 'vue';
-import { useToast } from 'primevue/usetoast';
-import { useConfirm } from 'primevue/useconfirm';
-import { usePermissions } from '../composables/usePermissions';
-import api from '../services/api';
+import { ref, reactive, onMounted, computed } from "vue";
+import { useToast } from "primevue/usetoast";
+import { useConfirm } from "primevue/useconfirm";
+import { usePermissions } from "../composables/usePermissions";
+import api from "../services/api";
 
 export default {
-  name: 'Asistencias',
+  name: "Asistencias",
   setup() {
     const toast = useToast();
     const confirm = useConfirm();
     const { permissions } = usePermissions();
-    
+
     // Estado reactivo
     const asistencias = ref([]);
     const estadisticas = ref({});
@@ -323,21 +352,21 @@ export default {
     const guardandoIngreso = ref(false);
     const clientesEncontrados = ref([]);
     const clienteSeleccionado = ref(null);
-    
+
     const filtros = reactive({
-      busqueda: '',
+      busqueda: "",
       fecha: null,
-      hoy: true
+      hoy: true,
     });
-    
+
     const formularioIngreso = reactive({
-      busqueda: '',
+      busqueda: "",
       permitirSinMembresia: false,
-      observaciones: ''
+      observaciones: "",
     });
-    
+
     const errores = reactive({
-      busqueda: ''
+      busqueda: "",
     });
 
     // Métodos
@@ -345,20 +374,20 @@ export default {
       try {
         loading.value = true;
         const params = {};
-        
+
         if (filtros.busqueda) params.cliente_id = filtros.busqueda;
         if (filtros.fecha) params.fecha = formatearFechaParaAPI(filtros.fecha);
         if (filtros.hoy) params.hoy = true;
-        
+
         const response = await api.getAsistencias(params);
         asistencias.value = response.data || response;
       } catch (error) {
-        console.error('Error loading asistencias:', error);
+        console.error("Error loading asistencias:", error);
         toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Error al cargar asistencias',
-          life: 3000
+          severity: "error",
+          summary: "Error",
+          detail: "Error al cargar asistencias",
+          life: 3000,
         });
       } finally {
         loading.value = false;
@@ -370,7 +399,7 @@ export default {
         const response = await api.getEstadisticasAsistencias();
         estadisticas.value = response;
       } catch (error) {
-        console.error('Error loading statistics:', error);
+        console.error("Error loading statistics:", error);
       }
     };
 
@@ -381,32 +410,38 @@ export default {
       }
 
       try {
-        const response = await api.get('/clientes', {
-          params: { search: formularioIngreso.busqueda }
+        const response = await api.get("/clientes", {
+          params: { search: formularioIngreso.busqueda },
         });
-        
+
         if (response.data) {
-          clientesEncontrados.value = response.data.map(cliente => {
+          clientesEncontrados.value = response.data.map((cliente) => {
             let diasRestantes = undefined;
             let esMoroso = true;
-            
+
             if (cliente.membresias && cliente.membresias.length > 0) {
               // Encontrar la membresía más reciente (con fecha de vencimiento más lejana)
-              const membresiaActiva = cliente.membresias.reduce((latest, current) => {
-                const currentVenc = new Date(current.pivot.fecha_vencimiento);
-                const latestVenc = new Date(latest.pivot.fecha_vencimiento);
-                return currentVenc > latestVenc ? current : latest;
-              });
-              
-              const vencimiento = new Date(membresiaActiva.pivot.fecha_vencimiento);
+              const membresiaActiva = cliente.membresias.reduce(
+                (latest, current) => {
+                  const currentVenc = new Date(current.pivot.fecha_vencimiento);
+                  const latestVenc = new Date(latest.pivot.fecha_vencimiento);
+                  return currentVenc > latestVenc ? current : latest;
+                }
+              );
+
+              const vencimiento = new Date(
+                membresiaActiva.pivot.fecha_vencimiento
+              );
               const hoy = new Date();
               hoy.setHours(0, 0, 0, 0); // Normalizar a medianoche
               vencimiento.setHours(0, 0, 0, 0); // Normalizar a medianoche
-              
-              diasRestantes = Math.ceil((vencimiento - hoy) / (1000 * 60 * 60 * 24));
+
+              diasRestantes = Math.ceil(
+                (vencimiento - hoy) / (1000 * 60 * 60 * 24)
+              );
               esMoroso = diasRestantes < 0;
             }
-            
+
             return {
               id: cliente.id,
               nombre: cliente.nombre,
@@ -414,12 +449,12 @@ export default {
               correo: cliente.correo,
               telefono: cliente.telefono,
               dias_restantes: diasRestantes,
-              es_moroso: esMoroso
+              es_moroso: esMoroso,
             };
           });
         }
       } catch (error) {
-        console.error('Error buscando clientes:', error);
+        console.error("Error buscando clientes:", error);
         clientesEncontrados.value = [];
       }
     };
@@ -432,24 +467,24 @@ export default {
 
     const registrarIngreso = async () => {
       if (!clienteSeleccionado.value) {
-        errores.busqueda = 'Debe seleccionar un cliente';
+        errores.busqueda = "Debe seleccionar un cliente";
         return;
       }
 
       try {
         guardandoIngreso.value = true;
-        
+
         const response = await api.registrarIngreso({
           cliente_id: clienteSeleccionado.value.id,
           permitir_sin_membresia: formularioIngreso.permitirSinMembresia,
-          observaciones: formularioIngreso.observaciones
+          observaciones: formularioIngreso.observaciones,
         });
 
         toast.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: response?.message || 'Ingreso registrado exitosamente',
-          life: 3000
+          severity: "success",
+          summary: "Éxito",
+          detail: response?.message || "Ingreso registrado exitosamente",
+          life: 3000,
         });
 
         // Cerrar modal y recargar datos
@@ -457,34 +492,39 @@ export default {
         cargarAsistencias();
         cargarEstadisticas();
       } catch (error) {
-        console.error('Error registrando ingreso:', error);
-        
+        console.error("Error registrando ingreso:", error);
+
         // Verificar si es error de membresía inválida
-        if (error.response?.data?.membresia_invalida && error.response?.data?.requiere_permiso) {
+        if (
+          error.response?.data?.membresia_invalida &&
+          error.response?.data?.requiere_permiso
+        ) {
           toast.add({
-            severity: 'warn',
-            summary: 'Membresía Requerida',
-            detail: 'El cliente no tiene una membresía válida. Active la opción "Permitir ingreso sin membresía válida" para continuar.',
-            life: 7000
+            severity: "warn",
+            summary: "Membresía Requerida",
+            detail:
+              'El cliente no tiene una membresía válida. Active la opción "Permitir ingreso sin membresía válida" para continuar.',
+            life: 7000,
           });
           // NO cerramos el modal para que el usuario pueda activar la opción
         } else if (error.response?.data?.ya_ingreso) {
           // Cliente ya ingresó hoy
           toast.add({
-            severity: 'info',
-            summary: 'Ya registrado',
+            severity: "info",
+            summary: "Ya registrado",
             detail: error.response.data.message,
-            life: 5000
+            life: 5000,
           });
           cerrarDialogoIngreso(); // Cerrar porque no hay nada que el usuario pueda hacer
         } else {
           // Otros errores
-          const message = error.response?.data?.message || 'Error al registrar ingreso';
+          const message =
+            error.response?.data?.message || "Error al registrar ingreso";
           toast.add({
-            severity: 'error',
-            summary: 'Error',
+            severity: "error",
+            summary: "Error",
             detail: message,
-            life: 5000
+            life: 5000,
           });
           // Para errores generales, también cerramos el modal
           cerrarDialogoIngreso();
@@ -496,18 +536,18 @@ export default {
 
     const confirmarEliminar = (asistencia) => {
       confirm.require({
-        message: '¿Está seguro de eliminar esta asistencia?',
-        header: 'Confirmar Eliminación',
-        icon: 'pi pi-exclamation-triangle',
-        acceptLabel: 'Sí, eliminar',
-        rejectLabel: 'Cancelar',
-        acceptClass: 'p-button-danger',
+        message: "¿Está seguro de eliminar esta asistencia?",
+        header: "Confirmar Eliminación",
+        icon: "pi pi-exclamation-triangle",
+        acceptLabel: "Sí, eliminar",
+        rejectLabel: "Cancelar",
+        acceptClass: "p-button-danger",
         accept: async () => {
           await eliminarAsistencia(asistencia.id);
         },
         reject: () => {
           // No hacer nada si se cancela
-        }
+        },
       });
     };
 
@@ -515,33 +555,34 @@ export default {
       try {
         await api.deleteAsistencia(id);
         toast.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: 'Asistencia eliminada exitosamente',
-          life: 3000
+          severity: "success",
+          summary: "Éxito",
+          detail: "Asistencia eliminada exitosamente",
+          life: 3000,
         });
         // Recargar datos después de eliminar
         await cargarAsistencias();
         await cargarEstadisticas();
       } catch (error) {
-        console.error('Error eliminando asistencia:', error);
+        console.error("Error eliminando asistencia:", error);
         toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: error.response?.data?.message || 'Error al eliminar asistencia',
-          life: 3000
+          severity: "error",
+          summary: "Error",
+          detail:
+            error.response?.data?.message || "Error al eliminar asistencia",
+          life: 3000,
         });
       }
     };
 
     const cerrarDialogoIngreso = () => {
       mostrarDialogoIngreso.value = false;
-      formularioIngreso.busqueda = '';
+      formularioIngreso.busqueda = "";
       formularioIngreso.permitirSinMembresia = false;
-      formularioIngreso.observaciones = '';
+      formularioIngreso.observaciones = "";
       clientesEncontrados.value = [];
       clienteSeleccionado.value = null;
-      errores.busqueda = '';
+      errores.busqueda = "";
     };
 
     const filtrarHoy = () => {
@@ -560,7 +601,7 @@ export default {
     };
 
     const limpiarFiltros = () => {
-      filtros.busqueda = '';
+      filtros.busqueda = "";
       filtros.fecha = null;
       filtros.hoy = true;
       cargarAsistencias();
@@ -568,15 +609,30 @@ export default {
 
     // Utilidades
     const formatearFechaHora = (fecha) => {
-      return new Date(fecha).toLocaleString('es-ES');
+      return new Date(fecha).toLocaleString("es-CO", {
+        timeZone: "America/Bogota",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      });
     };
 
+    // Format: dd/mm/yyyy — Hora de Colombia
     const formatearFecha = (fecha) => {
-      return new Date(fecha).toLocaleDateString('es-ES');
+      return new Date(fecha).toLocaleDateString("es-CO", {
+        timeZone: "America/Bogota",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
     };
 
     const formatearFechaParaAPI = (fecha) => {
-      return fecha.toISOString().split('T')[0];
+      return fecha.toISOString().split("T")[0];
     };
 
     const esHoy = (fecha) => {
@@ -614,7 +670,7 @@ export default {
       formularioIngreso,
       errores,
       permissions,
-      
+
       // Métodos
       cargarAsistencias,
       buscarClientes,
@@ -628,10 +684,10 @@ export default {
       formatearFechaHora,
       formatearFecha,
       esHoy,
-      debounceSearch
+      debounceSearch,
     };
-  }
-}
+  },
+};
 </script>
 
 <style scoped>
@@ -851,7 +907,7 @@ export default {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .stats-grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
