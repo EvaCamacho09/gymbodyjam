@@ -132,7 +132,7 @@
 
           <Column field="fecha_ingreso" header="Fecha y Hora" sortable>
             <template #body="{ data }">
-              {{ formatearFechaHora(data.fecha_ingreso) }}
+              {{ formatearFechaSinZona(data.fecha_ingreso) }}
             </template>
           </Column>
 
@@ -619,6 +619,11 @@ export default {
         second: "2-digit",
         hour12: false,
       });
+    };
+
+    const formatearFechaSinZona = (fecha) => {
+      const [year, month, day] = fecha.split("T")[0].split("-");
+      return `${day}/${month}/${year}`;
     };
 
     // Format: dd/mm/yyyy — Hora de Colombia
