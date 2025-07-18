@@ -132,7 +132,7 @@
 
           <Column field="fecha_ingreso" header="Fecha y Hora" sortable>
             <template #body="{ data }">
-              {{ formatearFechaHoraColombia(data.created_at) }}
+              {{ formatearFechaHoraSinZona(data.created_at) }}
             </template>
           </Column>
 
