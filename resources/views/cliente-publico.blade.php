@@ -397,6 +397,11 @@
                 </div>
             @endif
         </div>
+
+        <div class="info-row">
+           <span class="info-label"><strong>RECOMENDACIONES SEGÚN TUS OBJETIVOS:</strong></span>
+           <span> {{$datos['recomendaciones']}}</span>
+        </div>
     </div>
 
 
