@@ -201,27 +201,34 @@ class MembresiaController extends Controller
             'precio_pagado' => 'required|numeric|min:0',
         ]);
 
-        $clienteMembresia = ClienteMembresia::findOrFail($clienteMembresiaId);
-        $membresia = Membresia::findOrFail($clienteMembresia->membresia_id);
-       
-        $fechaInicio = Carbon::parse($request->fecha_inicio);
-        $fechaVencimiento = $fechaInicio->copy()->addDays($membresia->duracion_dias);
+        try {
+            $clienteMembresia = ClienteMembresia::findOrFail($clienteMembresiaId);
+            $membresia = Membresia::findOrFail($clienteMembresia->membresia_id);
 
-     
+            // Calcular nueva fecha de vencimiento basada en la fecha de inicio
+            $fechaInicio = Carbon::parse($request->fecha_inicio);
+            $fechaVencimiento = $fechaInicio->copy()->addDays($membresia->duracion_dias);
 
-        // Actualizar los campos
-        $clienteMembresia->membresia_id = $membresia->id;
-        $clienteMembresia->fecha_inicio = $request->fecha_inicio;
-        $clienteMembresia->fecha_vencimiento = $fechaVencimiento;
-        $clienteMembresia->precio_pagado = $request->precio_pagado;
+            // Actualizar solo los campos requeridos
+            $clienteMembresia->fecha_inicio = $request->fecha_inicio;
+            $clienteMembresia->fecha_vencimiento = $fechaVencimiento;
+            $clienteMembresia->precio_pagado = $request->precio_pagado;
+            $clienteMembresia->save();
 
-        $clienteMembresia->save();
+            // Cargar relaciones para la respuesta
+            $clienteMembresia->load(['cliente', 'membresia']);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Membresía actualizada correctamente',
-            'cliente_membresia' => $clienteMembresia
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Membresía actualizada correctamente',
+                'cliente_membresia' => $clienteMembresia
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar la membresía: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
