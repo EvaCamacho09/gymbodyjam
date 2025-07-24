@@ -36,17 +36,17 @@ Route::middleware('auth:sanctum')->group(function () {
     // Autenticación
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
-    
+
     // Dashboard
     Route::get('/dashboard/estadisticas', [DashboardController::class, 'estadisticas']);
     Route::get('/dashboard/actividad-reciente', [DashboardController::class, 'actividadReciente']);
-    
+
     // Clientes
     Route::apiResource('clientes', ClienteController::class);
     Route::get('/clientes-morosos', [ClienteController::class, 'morosos']);
     Route::get('/clientes-proximos-vencer', [ClienteController::class, 'proximosVencer']);
     Route::post('/clientes/{cliente}/enlace-publico', [ClienteController::class, 'generarEnlacePublico']);
-    
+
     // Membresías
     Route::apiResource('membresias', MembresiaController::class);
     Route::post('/asignar-membresia', [MembresiaController::class, 'asignarCliente']);
@@ -55,13 +55,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/historial-membresias/{clienteId}', [MembresiaController::class, 'historialMembresias']);
     Route::post('/cambiar-membresia/{clienteMembresiaId}', [MembresiaController::class, 'cambiarMembresia']);
     Route::get('/historial-membresias/{clienteId}', [MembresiaController::class, 'historialMembresias']);
-    
+    Route::put('/membresias-cliente/{clienteMembresiaId}', [MembresiaController::class, 'actualizarMembresiaCliente']);
+
+
     // Asistencias
     Route::apiResource('asistencias', AsistenciaController::class);
     Route::post('/registrar-ingreso', [AsistenciaController::class, 'store']);
     Route::post('/registrar-ingreso-busqueda', [AsistenciaController::class, 'registrarPorBusqueda']);
     Route::get('/estadisticas-asistencias', [AsistenciaController::class, 'estadisticas']);
-    
+
     // Rutas solo para admin
     Route::middleware('admin')->group(function () {
         Route::post('/register', [AuthController::class, 'register']);
