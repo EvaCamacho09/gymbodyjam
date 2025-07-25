@@ -206,8 +206,8 @@ export default {
         console.log('Token en localStorage:', getFromLocalStorage('token'));
         
         const response = await api.get('/dashboard/estadisticas');
-        console.log('Respuesta estadísticas:', response.data);
-        estadisticas.value = response.data;
+        console.log('Respuesta estadísticas:', response);
+        estadisticas.value = response;
         debugInfo.value.estadisticasLoaded = true;
       } catch (error) {
         console.error('Error al cargar estadísticas:', error);
