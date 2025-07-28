@@ -108,8 +108,11 @@
           <Column header="Días Restantes">
             <template #body="slotProps">
               <div class="dias-restantes">
-                <span v-if="slotProps.data.dias_restantes !== undefined && slotProps.data.dias_restantes >= 0">
-                  {{ slotProps.data.dias_restantes }} días
+                <span v-if="slotProps.data.dias_restantes !== undefined && slotProps.data.dias_restantes >= 0 && slotProps.data.dias_restantes !== null">
+                  {{ slotProps.data.dias_restantes  }} días
+                </span>
+                <span v-else-if="slotProps.data.dias_restantes === null" class="vencida">
+                  0 días (Sin Membresía)
                 </span>
                 <span v-else-if="slotProps.data.dias_restantes !== undefined && slotProps.data.dias_restantes < 0" class="vencida">
                   Vencida hace {{ Math.abs(slotProps.data.dias_restantes) }} días

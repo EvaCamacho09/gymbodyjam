@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ClienteMembresia extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'cliente_membresia';
 
@@ -17,7 +18,8 @@ class ClienteMembresia extends Model
         'fecha_inicio',
         'fecha_vencimiento',
         'precio_pagado',
-        'estado_pago'
+        'estado_pago',
+        'estado'
     ];
 
     protected $casts = [

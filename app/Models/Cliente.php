@@ -50,11 +50,18 @@ class Cliente extends Model
     public function membresiaActiva()
     {
         return $this->belongsToMany(Membresia::class, 'cliente_membresia')
-            ->withPivot('fecha_inicio', 'fecha_vencimiento', 'precio_pagado', 'estado_pago','id')
+            ->withPivot('fecha_inicio', 'fecha_vencimiento', 'precio_pagado', 'estado_pago', 'id')
             ->wherePivot('fecha_vencimiento', '>=', now())
             ->latest('pivot_fecha_inicio')
             ->first();
     }
+
+public function ultimaMembresiaActiva()
+{
+    return $this->hasOne(ClienteMembresia::class, 'cliente_id')
+        ->whereNull('deleted_at')
+        ->orderByDesc('fecha_activacion'); // O `created_at` si no tienes esa columna
+}
 
     /**
      * Verificar si el cliente está moroso

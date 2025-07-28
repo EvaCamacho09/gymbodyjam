@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\Cliente;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 
 class ClienteController extends Controller
 {
@@ -34,35 +35,33 @@ class ClienteController extends Controller
         if ($request->filled('membresia')) {
             switch ($request->membresia) {
                 case 'moroso':
-                    $query->whereHas('membresias', function ($q) {
-                        $q->where('fecha_vencimiento', '<', now())
-                            ->whereNull('deleted_at');
+                    $query->whereDoesntHave('membresias', function ($q) {
+                        $q->where('fecha_vencimiento', '>=', now());
                     });
+                    Log::debug($query->get());
                     break;
 
                 case 'proximos':
                     $fechaLimite = now()->addDays(7);
                     $query->whereHas('membresias', function ($q) use ($fechaLimite) {
                         $q->where('fecha_vencimiento', '>=', now())
-                            ->where('fecha_vencimiento', '<=', $fechaLimite)
-                            ->whereNull('deleted_at');
+                            ->where('fecha_vencimiento', '<=', $fechaLimite);
                     });
                     break;
 
                 case 'activa':
                     $query->whereHas('membresias', function ($q) {
-                        $q->where('fecha_vencimiento', '>', now())
-                            ->whereNull('deleted_at');
+                        $q->where('fecha_vencimiento', '>', now());
                     });
                     break;
 
                 case 'sin_membresia':
-                    $query->whereDoesntHave('membresias', function ($q) {
-                        $q->whereNull('deleted_at');
-                    });
+                    $query->whereDoesntHave('membresias');
                     break;
             }
         }
+
+        
 
         $clientes = $query->with('membresias')->paginate(15);
 
@@ -104,7 +103,7 @@ class ClienteController extends Controller
             'presion_arterial' => 'nullable|string|max:10',
             'observaciones' => 'nullable|string|max:1000',
         ]);
-        
+
         $cliente = Cliente::create($request->all());
 
         return response()->json([
